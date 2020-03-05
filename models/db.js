@@ -54,4 +54,5 @@ Since nodemon listens for this same event, you don’t want to capture it each t
 preventing nodemon from working properly.
 */
 
-require('./schemas');
+require("./schemas");
+require("./users");

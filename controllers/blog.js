@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const blog = mongoose.model('Blog');
+const blog = mongoose.model("Blog");
 
 const blogFetchAll = (req, res) => {
     blog.find()
