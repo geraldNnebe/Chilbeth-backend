@@ -1,90 +1,91 @@
 const mongoose = require('mongoose');
-const ifEnter = require('../controllers/checkUser').checkUser;
-const Blog = mongoose.model("Blog");
+const ifEnter = require('./checkUser').checkUser;
+const Work = mongoose.model("Work");
 
-const blogFetchAll = (req, res) => {
-    Blog.find()
-        .exec((err, blogs) => {
-            if (!blogs) {
+const workFetchAll = (req, res) => {
+    Work.find()
+        .exec((err, works) => {
+            if (!works) {
                 return res.status(404)
                     .json({
-                        "message": "no blogs"
+                        "message": "no Works"
                     });
             } else if (err) {
                 return res.status(404)
                     .json(err);
             }
             res.status(200)
-                .json(blogs);
+                .json(works);
         });
 }
 
-const blogReadOne = (req, res) => {
-    Blog.findById(req.params.blogid)
-        .exec((err, blog) => {
-            if (!blog) {
+const workReadOne = (req, res) => {
+    Work.findById(req.params.workid)
+        .exec((err, work) => {
+            if (!work) {
                 return res.status(404)
-                    .json({ "message": "no Blog" });
+                    .json({ "message": "no Work" });
             } else if (err) {
                 return res.status(404)
                     .json(err);
             }
             res.status(200)
-                .json(blog);
+                .json(work);
         });
 }
 
-const blogCreate = function (req, res) {
+const workCreate = function (req, res) {
     ifEnter(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
-        Blog.create({
+        Work.create({
             author: author.email,
             title: req.body.title,
+            image: req.body.image,
             desc: req.body.desc,
-        }, (err, blog) => {
+        }, (err, work) => {
             if (err) {
                 res.status(400)
                     .json(err);
             } else {
                 res.status(201)
-                    .json(blog);
+                    .json(work);
             }
         });
     });
 };
 
-const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
+const workUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
     ifEnter(req, res, (req, res, author) => {
-        Blog.findById(req.params.blogid)
-            .exec((err, blog) => {
-                if (!blog) {
+        Work.findById(req.params.workid)
+            .exec((err, work) => {
+                if (!work) {
                     return res.status(404)
-                        .json({ message: "Blog not found" });
+                        .json({ message: "Work not found" });
                 } else if (err) {
                     return res.status(400)
                         .json(err);
                 }
-                blog.title = req.body.title;
-                blog.desc = req.body.desc;
-                blog.post = req.body.post;
-                blog.save((err, blog) => {
+                work.title = req.body.title;
+                work.image = req.body.image;
+                work.desc = req.body.desc;
+                work.save((err, work) => {
                     if (err) {
                         res.status(404)
                             .json(err);
                     } else {
                         res.status(200)
-                            .json(blog);
+                            .json(work);
                     }
                 });
             });
     });
 }
 
-const blogDeleteOne = (req, res) => {
+const workDeleteOne = (req, res) => {
     ifEnter(req, res, (req, res, author) => {
-        const { blogid } = req.params;
-        if (blogid) {
-            Blog.findByIdAndRemove(blogid)
-                .exec((err, blog) => {
+        const { workid } = req.params;
+        if (workid) {
+            Work.findByIdAndRemove(workid)
+                .exec((err, work) => {
                     if (err) {
                         return res.status(404)
                             .json(err);
@@ -94,15 +95,15 @@ const blogDeleteOne = (req, res) => {
                 })
         } else {
             res.status(404)
-                .json({ message: "Blog does not exist" });
+                .json({ message: "Work does not exist" });
         }
     });
 }
 
 module.exports = {
-    blogFetchAll,
-    blogReadOne,
-    blogCreate,
-    blogUpdateOne,
-    blogDeleteOne
+    workFetchAll,
+    workReadOne,
+    workCreate,
+    workUpdateOne,
+    workDeleteOne
 }

@@ -32,9 +32,11 @@ app.use('/api', (req, res, next) => {
 
 app.use('/api', apiRouter);
 app.use('/', indexRouter);
-// app.use('/users', usersRouter);
 
 // Error handler for api
+/* When the supplied JWT is invalid, or perhaps doesn’t exist, the middleware throws
+an error to prevent the code from continuing. You need to catch this error and return
+an unauthorized message and status (401). The error is typically expected from express-jwt */
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res.status(401)

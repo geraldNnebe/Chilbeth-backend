@@ -12,14 +12,17 @@ const blogSchema = new mongoose.Schema({
     author: {
         type: String,
         required: true,
-        default: "Chilbeth"
+        default: process.env.DEFAULT_AUTHOR
     },
     title: {
         type: String,
         required: true
     },
-    desc: {
+    desc: String,
+    post: String,
+    image: {
         type: String,
+        default: "default.jpg"
     },
     createdOn: {
         type: Date,
@@ -28,21 +31,22 @@ const blogSchema = new mongoose.Schema({
     comments: [blogCommentSchema]
 });
 
-const gallerySchema = new mongoose.Schema({
-    artist: {
+const workSchema = new mongoose.Schema({
+    author: {
         type: String,
         required: true,
-        default: "Chilbeth"
+        default: process.env.DEFAULT_AUTHOR
     },
     title: {
         type: String,
         required: true
     },
-    imageFileName: {
+    image: {
         type: String,
-        required: true
+        required: true,
+        default: "default.jpg"
     },
-    notes: {
+    desc: {
         type: String
     },
     createdOn: {
@@ -53,4 +57,4 @@ const gallerySchema = new mongoose.Schema({
 })
 
 mongoose.model("Blog", blogSchema);
-mongoose.model("Gallery", gallerySchema);
+mongoose.model("Work", workSchema);
