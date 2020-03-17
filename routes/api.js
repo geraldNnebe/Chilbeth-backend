@@ -12,6 +12,7 @@ const ctrlBlogs = require('../controllers/blog');
 const ctrlWorks = require('../controllers/work');
 const adminSettings = require('../controllers/adminSettings');
 const ctrlAuth = require('../controllers/auth');
+const ctrlUpload = require('../controllers/upload');
 
 // Initialize the router middleware (an authentication middleware in this case) (yes, routers can have middlewares)
 const expressJwt = expressjwt({ // The "options object" we talked about earlier
@@ -41,7 +42,12 @@ router.route('/work/:workid')
 // router.route('/settings')
 //     .post(expressJwt, adminSettings.updateSettings);
 
+/* User authentication */
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
+
+/* File upload */
+router.route('/upload') // TODO enable auth middleware
+    .post(ctrlUpload.upload);
 
 module.exports = router;
