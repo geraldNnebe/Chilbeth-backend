@@ -20,7 +20,7 @@ const blogSchema = new mongoose.Schema({
     },
     desc: String,
     post: String,
-    image: {
+    imageSortHash: {
         type: String,
         default: "default.jpg"
     },
@@ -41,7 +41,7 @@ const workSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    image: {
+    imageSortHash: {
         type: String,
         required: true,
         default: "default.jpg"
@@ -54,7 +54,21 @@ const workSchema = new mongoose.Schema({
         default: Date.now
     },
     comments: [blogCommentSchema]
-})
+});
+
+const pictureSchema = new mongoose.Schema({
+    author: {
+        type: String,
+        required: true,
+        default: process.env.DEFAULT_AUTHOR
+    },
+    sortingHash: {
+        type: String,
+        required: true,
+        unique: true
+    }
+});
 
 mongoose.model("Blog", blogSchema);
 mongoose.model("Work", workSchema);
+mongoose.model("Picture", pictureSchema);
