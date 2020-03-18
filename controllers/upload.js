@@ -9,13 +9,12 @@ const crypto = require('crypto'); // TODO remove this
 function resize(path, format, width, height, outputName, callback = () => { }) {
     const outputImagePath = __dirname + '/../public/images/uploads/' + outputName + "." + format;
 
-    console.log(outputImagePath);
     return sharp(path)
         .toFormat(format)
         .resize(width, height)
         .toFile(outputImagePath)
         .then(() => {
-            callback()
+            callback(path)
         }).
         catch(() => {
             // res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
@@ -57,9 +56,12 @@ const upload = (req, res) => {
                         .json(err);
                 } else { // When we successfully added the image reference to the database
                     // We resize the uploaded image to two versions
-                    let main = resize(file.path, "png", 1080, 720, `big/${picture.sortingHash}`); // 1080x720 has the aspect ratio 1.5:1 or 3:2
-                    let thumb = resize(file.path, "png", 300, 200, `small/${picture.sortingHash}`, () => {  // aspect ratio 3:2
-                        fs.unlinkSync(file.path);
+
+                    // 300x200 has the aspect ratio 1.5:1 or 3:2
+                    resize(file.path, "png", 300, 200, `small/${picture.sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
+                    // 900x600 has the aspect ratio 1.5:1 or 3:2
+                    resize(file.path, "png", 900, 600, `big/${picture.sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
+                        fs.unlinkSync(originalPathToDelete);
                         res.status(201)
                             .json({
                                 message: "Image uploaded successfully",
