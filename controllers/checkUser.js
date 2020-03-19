@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
-/* From the JWT token just, decoded from express-jwt, check if the supplied user is valid */
-
+/* From the JWT token just decoded from express-jwt, check if the supplied user is valid */
 const checkUser = (req, res, callback) => {
     if (req.payload && req.payload.email) {
         User.findOne({ email: req.payload.email })

@@ -48,6 +48,6 @@ router.post('/login', ctrlAuth.login);
 
 /* File upload */
 router.route('/upload') // TODO enable auth middleware
-    .post(ctrlUpload.upload);
+    .post(expressJwt, ctrlUpload.upload);
 
 module.exports = router;
