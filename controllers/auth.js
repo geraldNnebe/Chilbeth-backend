@@ -11,6 +11,7 @@ const register = (req, res) => {
     const user = new User();
     user.name = req.body.name;
     user.email = req.body.email;
+    user.admin = true; // TODO edit this
     user.setPassword(req.body.password);
     user.save((err) => {
         if (err) {

@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
     },
     salt: {
         type: String
-    }
+    },
+    admin: Boolean
 });
 
 userSchema.methods.setPassword = function (password) {
@@ -41,6 +42,7 @@ userSchema.methods.generateJwt = function () {
         _id: this._id,
         email: this.email,
         name: this.name,
+        admin: this.admin, // TODO
         exp: parseInt(expiry.getTime() / 1000, 10),
     }, process.env.JWT_SECRET);
 };
