@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ifEnter = require('./checkUser').checkUser;
+const canUpload = require('./checkUser').checkUser;
 const Picture = mongoose.model("Picture");
 const formidable = require('formidable');
 const fs = require('fs');
@@ -31,7 +31,7 @@ function isHex(string) {
 }
 
 const upload = (req, res) => {
-    ifEnter(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
+    canUpload(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
         new formidable.IncomingForm().parse(req)
             .on('fileBegin', (name, file) => {
                 file.path = __dirname + '/../public/images/uploads/' + file.name

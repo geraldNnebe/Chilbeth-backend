@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ifEnter = require('../controllers/checkUser').checkUser;
+const canAccess = require('../controllers/checkUser').checkUser;
 const Blog = mongoose.model("Blog");
 
 const blogFetchAll = (req, res) => {
@@ -35,11 +35,12 @@ const blogReadOne = (req, res) => {
 }
 
 const blogCreate = function (req, res) {
-    ifEnter(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
+    canAccess(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
         Blog.create({
             author: author.email,
             title: req.body.title,
-            desc: req.body.desc,
+            post: req.body.post,
+            imageSortHash: req.body.sortingHash,
         }, (err, blog) => {
             if (err) {
                 res.status(400)
@@ -53,7 +54,7 @@ const blogCreate = function (req, res) {
 };
 
 const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
-    ifEnter(req, res, (req, res, author) => {
+    canAccess(req, res, (req, res, author) => {
         Blog.findById(req.params.blogid)
             .exec((err, blog) => {
                 if (!blog) {
@@ -80,7 +81,7 @@ const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
 }
 
 const blogDeleteOne = (req, res) => {
-    ifEnter(req, res, (req, res, author) => {
+    canAccess(req, res, (req, res, author) => {
         const { blogid } = req.params;
         if (blogid) {
             Blog.findByIdAndRemove(blogid)

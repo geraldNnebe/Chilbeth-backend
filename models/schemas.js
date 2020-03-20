@@ -18,7 +18,6 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    desc: String,
     post: String,
     imageSortHash: {
         type: String,

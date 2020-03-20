@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ifEnter = require('./checkUser').checkUser;
+const canAccess = require('./checkUser').checkUser; // Used to check user priviledges
 const Work = mongoose.model("Work");
 
 const workFetchAll = (req, res) => {
@@ -35,11 +35,11 @@ const workReadOne = (req, res) => {
 }
 
 const workCreate = function (req, res) {
-    ifEnter(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
+    canAccess(req, res, (req, res, author) => {
         Work.create({
             author: author.email,
             title: req.body.title,
-            image: req.body.image,
+            imageSortHash: req.body.sortingHash,
             desc: req.body.desc,
         }, (err, work) => {
             if (err) {
@@ -54,7 +54,7 @@ const workCreate = function (req, res) {
 };
 
 const workUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
-    ifEnter(req, res, (req, res, author) => {
+    canAccess(req, res, (req, res, author) => {
         Work.findById(req.params.workid)
             .exec((err, work) => {
                 if (!work) {
@@ -81,7 +81,7 @@ const workUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
 }
 
 const workDeleteOne = (req, res) => {
-    ifEnter(req, res, (req, res, author) => {
+    canAccess(req, res, (req, res, author) => {
         const { workid } = req.params;
         if (workid) {
             Work.findByIdAndRemove(workid)
