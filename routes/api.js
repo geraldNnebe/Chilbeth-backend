@@ -10,7 +10,6 @@ const expressjwt = require('express-jwt');
 
 const ctrlBlogs = require('../controllers/blog');
 const ctrlWorks = require('../controllers/work');
-const adminSettings = require('../controllers/adminSettings');
 const ctrlAuth = require('../controllers/auth');
 const ctrlUpload = require('../controllers/upload');
 

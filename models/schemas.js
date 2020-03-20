@@ -22,7 +22,7 @@ const blogSchema = new mongoose.Schema({
     post: String,
     imageSortHash: {
         type: String,
-        default: "default.jpg"
+        default: "default.jpg" // TODO
     },
     createdOn: {
         type: Date,
@@ -44,7 +44,7 @@ const workSchema = new mongoose.Schema({
     imageSortHash: {
         type: String,
         required: true,
-        default: "default.jpg"
+        default: "default.jpg" // TODO
     },
     desc: {
         type: String

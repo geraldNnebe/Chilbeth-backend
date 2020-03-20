@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const dbURI = 'mongodb://localhost/Chilbeth';
+const dbURI = 'mongodb://localhost/Chilbeth'; // TODO what about password?
 mongoose.connect(dbURI, { useNewUrlParser: true });
 
 /* Events */
@@ -24,7 +24,7 @@ const gracefulShutdown = (msg, callback) => {
 
 // For nodemon restarts
 process.once('SIGUSR2', () => { // Listens to a SIGUSR2 event. nodemon uses SIGUSR2
-    gracefulShutdown('nodemon restart', () => { // Sends a message to gracefully shutdown Mongoose, and a callback to kill the process
+    gracefulShutdown('nodemon restart', () => { // Sends a message for gracefully shuting down Mongoose, and a callback to kill the process
         process.kill(process.pid, 'SIGUSR2'); // This callback emits another SIGUSR2
     });
 });
@@ -45,7 +45,8 @@ process.on('SIGTERM', () => { // Listens to a SIGTERM event
 
 /*
 Now when the application terminates, it gracefully closes the Mongoose connection
-before it ends. Similarly, when nodemon restarts the application due to changes in the
+before it ends.
+Similarly, when nodemon restarts the application due to changes in the
 source files, the application closes the current Mongoose connection first. The nodemon
 listener is using process.once as opposed to process.on, as you want to listen
 for the SIGUSR2 event only once in the application, since it will be emitted twice; the
@@ -54,5 +55,5 @@ Since nodemon listens for this same event, you don’t want to capture it each t
 preventing nodemon from working properly.
 */
 
-require("./schemas");
 require("./users");
+require("./schemas");
