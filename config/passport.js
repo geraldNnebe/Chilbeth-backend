@@ -3,6 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
+/* Works with controllers/auth.js */
 passport.use(new LocalStrategy({
     usernameField: 'email'
 },

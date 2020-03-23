@@ -6,7 +6,7 @@ const workFetchAll = (req, res) => {
     Work.find()
         .exec((err, works) => {
             if (!works) {
-                return res.status(404)
+                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
                     .json({
                         "message": "no Works"
                     });

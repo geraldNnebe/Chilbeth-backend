@@ -9,7 +9,7 @@ const blogCommentSchema = new mongoose.Schema({
 });
 
 const blogSchema = new mongoose.Schema({
-    author: {
+    authorEmail: {
         type: String,
         required: true,
         default: process.env.DEFAULT_AUTHOR
@@ -19,6 +19,7 @@ const blogSchema = new mongoose.Schema({
         required: true
     },
     post: String,
+    desc: String,
     imageSortHash: {
         type: String,
         default: "default.jpg" // TODO
@@ -31,7 +32,7 @@ const blogSchema = new mongoose.Schema({
 });
 
 const workSchema = new mongoose.Schema({
-    author: {
+    autauthorEmailhor: {
         type: String,
         required: true,
         default: process.env.DEFAULT_AUTHOR
@@ -56,7 +57,7 @@ const workSchema = new mongoose.Schema({
 });
 
 const pictureSchema = new mongoose.Schema({
-    author: {
+    authorEmail: {
         type: String,
         required: true,
         default: process.env.DEFAULT_AUTHOR

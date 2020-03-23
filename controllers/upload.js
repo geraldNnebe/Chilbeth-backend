@@ -66,8 +66,8 @@ const upload = (req, res) => {
                                 .json(err);
                         } else { // When we successfully added the image reference to the database
                             // We resize the uploaded image to two versions
-                            // 450x300 has the aspect ratio 1.5:1 or 3:2
-                            resize(file.path, "jpg", 450, 300, `small/${picture.sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
+                            // 300x200 has the aspect ratio 1.5:1 or 3:2
+                            resize(file.path, "jpg", 300, 200, `small/${picture.sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
                             // 1080x720 has the aspect ratio 1.5:1 or 3:2
                             resize(file.path, "jpg", 1080, 720, `big/${picture.sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
                                 fs.unlinkSync(originalPathToDelete);

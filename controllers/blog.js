@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const canAccess = require('../controllers/checkUser').checkUser;
 const Blog = mongoose.model("Blog");
+const canAccess = require('../controllers/checkUser').checkUser;
+const getUser = require('../controllers/user');
 
-const blogFetchAll = (req, res) => {
+const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it will be too long
     Blog.find()
         .exec((err, blogs) => {
             if (!blogs) {
-                return res.status(404)
+                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
                     .json({
                         "message": "no blogs"
                     });
@@ -14,6 +15,12 @@ const blogFetchAll = (req, res) => {
                 return res.status(404)
                     .json(err);
             }
+            // Continue if no errors
+            blogs.forEach(function (blog) {
+                // Add the author's name to each blog entry
+                // TODO this requires optimization in the future
+                blog.authorName = getUser.getName(blog.authorEmail);
+            });
             res.status(200)
                 .json(blogs);
         });
@@ -40,6 +47,7 @@ const blogCreate = function (req, res) {
             author: author.email,
             title: req.body.title,
             post: req.body.post,
+            desc: req.body.desc,
             imageSortHash: req.body.sortingHash,
         }, (err, blog) => {
             if (err) {

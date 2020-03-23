@@ -25,6 +25,7 @@ const register = (req, res) => {
     });
 };
 
+/* Works with config/passport.js */
 const login = (req, res) => {
     if (!req.body.email || !req.body.password) {
         return res.status(400)
