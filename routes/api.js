@@ -21,8 +21,10 @@ const expressJwt = expressjwt({ // The "options object" we talked about earlier
 
 /* Blog routes */
 router.route('/blog')
-    .get(ctrlBlogs.blogFetchAll)
+    .get(ctrlBlogs.blogFetchAll) // Caution: overload
     .post(expressJwt, ctrlBlogs.blogCreate); // Note the expressJwt router middleware
+router.route('/blog/p/:page')
+    .get(ctrlBlogs.blogFetchSome);
 router.route('/blog/:blogid')
     .get(ctrlBlogs.blogReadOne)
     .put(expressJwt, ctrlBlogs.blogUpdateOne)
@@ -30,8 +32,10 @@ router.route('/blog/:blogid')
 
 /* Work routes */
 router.route('/work')
-    .get(ctrlWorks.workFetchAll)
+    .get(ctrlWorks.workFetchAll) // Caution: overload
     .post(expressJwt, ctrlWorks.workCreate); // Note the expressJwt router middleware
+router.route('/work/p/:page')
+    .get(ctrlWorks.workFetchSome);
 router.route('/work/:workid')
     .get(ctrlWorks.workReadOne)
     .put(expressJwt, ctrlWorks.workUpdateOne)

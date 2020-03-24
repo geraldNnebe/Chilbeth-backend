@@ -26,6 +26,44 @@ const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it
         });
 }
 
+const blogFetchSome = (req, res) => { // TODO should not fetch the post, since it will be too long
+    var perPage = 3, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
+    Blog.find()
+        .skip(perPage * (currentPageNumber - 1))
+        .limit(perPage)
+        .sort({ createdOn: 'asc' })
+        .exec((err, blogs) => {
+            if (!blogs) {
+                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
+                    .json({
+                        "message": "no blogs"
+                    });
+            } else if (err) {
+                return res.status(404)
+                    .json(err);
+            }
+            // Continue if no errors
+            blogs.forEach(function (blog) {
+                // Add the author's name to each blog entry
+                // TODO this requires optimization in the future
+                blog.authorName = getUser.getName(blog.authorEmail);
+            });
+            Blog.count().exec((err, count) => {
+                res.status(200)
+                    .json({
+                        items: blogs,
+                        pageInformation: {
+                            itemsFetched: blogs.length,
+                            itemsPerPage: perPage,
+                            grandTotalNumberOfItems: count,
+                            currentPageNumber: currentPageNumber,
+                            totalNumberOfPages: Math.ceil(count / perPage)
+                        }
+                    });
+            });
+        });
+}
+
 const blogReadOne = (req, res) => {
     Blog.findById(req.params.blogid)
         .exec((err, blog) => {
@@ -110,6 +148,7 @@ const blogDeleteOne = (req, res) => {
 
 module.exports = {
     blogFetchAll,
+    blogFetchSome,
     blogReadOne,
     blogCreate,
     blogUpdateOne,

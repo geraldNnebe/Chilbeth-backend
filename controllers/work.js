@@ -19,6 +19,38 @@ const workFetchAll = (req, res) => {
         });
 }
 
+const workFetchSome = (req, res) => {
+    var perPage = 12, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
+    Work.find()
+        .skip(perPage * (currentPageNumber - 1))
+        .limit(perPage)
+        .sort({ createdOn: 'asc' })
+        .exec((err, works) => {
+            if (!works) {
+                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
+                    .json({
+                        "message": "no Works"
+                    });
+            } else if (err) {
+                return res.status(404)
+                    .json(err);
+            }
+            Work.count().exec((err, count) => {
+                res.status(200)
+                    .json({
+                        items: works,
+                        pageInformation: {
+                            itemsFetched: works.length,
+                            itemsPerPage: perPage,
+                            grandTotalNumberOfItems: count,
+                            currentPageNumber: currentPageNumber,
+                            totalNumberOfPages: Math.ceil(count / perPage)
+                        }
+                    });
+            });
+        });
+}
+
 const workReadOne = (req, res) => {
     Work.findById(req.params.workid)
         .exec((err, work) => {
@@ -102,6 +134,7 @@ const workDeleteOne = (req, res) => {
 
 module.exports = {
     workFetchAll,
+    workFetchSome,
     workReadOne,
     workCreate,
     workUpdateOne,
