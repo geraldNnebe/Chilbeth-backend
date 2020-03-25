@@ -32,7 +32,7 @@ const blogSchema = new mongoose.Schema({
 });
 
 const workSchema = new mongoose.Schema({
-    autauthorEmailhor: {
+    authorEmail: {
         type: String,
         required: true,
         default: process.env.DEFAULT_AUTHOR

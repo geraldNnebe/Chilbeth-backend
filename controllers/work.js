@@ -24,7 +24,7 @@ const workFetchSome = (req, res) => {
     Work.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
-        .sort({ createdOn: 'asc' })
+        .sort({ createdOn: 'desc' })
         .exec((err, works) => {
             if (!works) {
                 return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing

@@ -31,7 +31,7 @@ const blogFetchSome = (req, res) => { // TODO should not fetch the post, since i
     Blog.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
-        .sort({ createdOn: 'asc' })
+        .sort({ createdOn: 'desc' })
         .exec((err, blogs) => {
             if (!blogs) {
                 return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
