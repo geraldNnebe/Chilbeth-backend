@@ -26,7 +26,7 @@ const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it
         });
 }
 
-const blogFetchSome = (req, res) => { // TODO should not fetch the post, since it will be too long
+const blogFetchSome = (req, res, perPage = 3) => { // TODO should not fetch the actual post, since it can be too long
     var perPage = 3, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
     Blog.find()
         .skip(perPage * (currentPageNumber - 1))
@@ -62,6 +62,10 @@ const blogFetchSome = (req, res) => { // TODO should not fetch the post, since i
                     });
             });
         });
+}
+
+const blogFetchRecent = (req, res) => {
+    blogFetchSome(req, res, 4);
 }
 
 const blogReadOne = (req, res) => {
@@ -149,6 +153,7 @@ const blogDeleteOne = (req, res) => {
 module.exports = {
     blogFetchAll,
     blogFetchSome,
+    blogFetchRecent,
     blogReadOne,
     blogCreate,
     blogUpdateOne,

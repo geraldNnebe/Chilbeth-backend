@@ -25,6 +25,7 @@ router.route('/blog')
     .post(expressJwt, ctrlBlogs.blogCreate); // Note the expressJwt router middleware
 router.route('/blog/p/:page')
     .get(ctrlBlogs.blogFetchSome);
+router.get('/blog/recent', ctrlBlogs.blogFetchRecent);
 router.route('/blog/:blogid')
     .get(ctrlBlogs.blogReadOne)
     .put(expressJwt, ctrlBlogs.blogUpdateOne)
