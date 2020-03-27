@@ -27,7 +27,8 @@ const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it
 }
 
 const blogFetchSome = (req, res, perPage = 3) => { // TODO should not fetch the actual post, since it can be too long
-    var perPage = 3, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
+    var perPage = 3;
+    var currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
     Blog.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
