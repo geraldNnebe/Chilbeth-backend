@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-const dbURI = 'mongodb://localhost/Chilbeth'; // TODO what about password?
+const dbURI = 'mongodb://localhost/Chilbeth';
+if (process.env.NODE_ENV === 'production') {
+    dbURI =
+        'mongodb://heroku_t0zs37gc:1k3t3pgo8sb5enosk314gj@ds159330.mlab.com:59330/ heroku_t0zs37gc';
+}
 mongoose.connect(dbURI, { useNewUrlParser: true });
 
 /* Events */

@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
+require('dotenv').config(); // Enables usage of .env environment variables
 require('./models/db');
 require('./config/passport');
 
