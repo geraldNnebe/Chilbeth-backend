@@ -148,6 +148,7 @@ const blogDeleteOne = (req, res) => {
             res.status(404)
                 .json({ message: "Blog does not exist" });
         }
+        // TODO delete uploaded images after deleting blog
     });
 }
 

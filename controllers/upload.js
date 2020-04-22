@@ -3,24 +3,38 @@ const canUpload = require('./checkUser').checkUser;
 const Picture = mongoose.model("Picture");
 const formidable = require('formidable');
 const fs = require('fs');
-const sharp = require('sharp');
+// const sharp = require('sharp');
+const Jimp = require('jimp');
 
 function resize(path, format, width, height, outputName, callback = () => { }) {
     const outputImagePath = __dirname + '/../public/images/uploads/' + outputName + "." + format;
 
-    return sharp(path)
-        .toFormat(format)
-        .resize(width, height)
-        .toFile(outputImagePath)
-        .then(() => {
-            callback(path)
-        }).
-        catch(() => {
-            // res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
-            //     error: true,
-            //     message: CONSTANTS.SERVER_ERROR_MESSAGE
-            // });
-            return false;
+    /* Sharp uses native binaries, and I don't know why that makes it stop randomly on glitch.com */
+    // sharp(path)
+    //     .toFormat(format)
+    //     .resize(width, height)
+    //     .toFile(outputImagePath)
+    //     .then(() => {
+    //         callback(path);
+    //     }).
+    //     catch(() => {
+    //         // res.status(CONSTANTS.SERVER_OK_HTTP_CODE).json({
+    //         //     error: true,
+    //         //     message: CONSTANTS.SERVER_ERROR_MESSAGE
+    //         // });
+    //         return false;
+    //     });
+
+    Jimp.read(path)
+        .then(image => {
+            return image // image is automatically jpg
+                .resize(width, height)
+                .quality(60)
+                .write(outputImagePath)
+                .then(callback(path));
+        })
+        .catch(err => {
+            console.log('Image upload in upload.js failed');
         });
 }
 

@@ -130,6 +130,7 @@ const workDeleteOne = (req, res) => {
                 .json({ message: "Work does not exist" });
         }
     });
+    // TODO delete uploaded images after deleting blog
 }
 
 module.exports = {
