@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 var dbURI = 'mongodb://localhost/Chilbeth';
-if (process.env.NODE_ENV === 'production')
+if (process.env.NODE_ENV === 'production' || process.env.IN_PRODUCTION_MODE === 'true')
     dbURI = process.env.MONGODB_URI
 mongoose.connect(dbURI, { useNewUrlParser: true });
 

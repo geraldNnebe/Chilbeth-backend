@@ -21,7 +21,7 @@ const expressJwt = expressjwt({ // The "options object" we talked about earlier
 
 /* Blog routes */
 router.route('/blog')
-    .get(ctrlBlogs.blogFetchAll) // Caution: overload
+    .get(ctrlBlogs.blogFetchAll) // TODO Caution: payload size may be too much
     .post(expressJwt, ctrlBlogs.blogCreate); // Note the expressJwt router middleware
 router.route('/blog/p/:page')
     .get(ctrlBlogs.blogFetchSome);
@@ -30,10 +30,16 @@ router.route('/blog/:blogid')
     .get(ctrlBlogs.blogReadOne)
     .put(expressJwt, ctrlBlogs.blogUpdateOne)
     .delete(expressJwt, ctrlBlogs.blogDeleteOne);
+// Blog comments
+router.route('/blog/:blogid/comment')
+    .post(ctrlBlogs.addComment);
+// router.delete('/blog/:blogid/comment/:commentid', ctrlBlogs.deleteComment);
+router.route('/blog/:blogid/comment/:page')
+    .get(ctrlBlogs.fetchComments);
 
 /* Work routes */
 router.route('/work')
-    .get(ctrlWorks.workFetchAll) // Caution: overload
+    .get(ctrlWorks.workFetchAll) // TODO Caution: payload size may be too much
     .post(expressJwt, ctrlWorks.workCreate); // Note the expressJwt router middleware
 router.route('/work/p/:page')
     .get(ctrlWorks.workFetchSome);

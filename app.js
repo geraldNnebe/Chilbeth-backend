@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize()); // initialize passport after the static paths,
 
 // Setup CORS function properly
-app.use('/api', (req, res, next) => {
+app.use('/api', (req, res, next) => { // TODO verify security here
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
   res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');

@@ -26,7 +26,7 @@ const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it
         });
 }
 
-const blogFetchSome = (req, res, perPage = 3) => { // TODO should not fetch the actual post, since it can be too long
+const blogFetchSome = (req, res) => { // TODO should not fetch the actual post, since it can be too long
     var perPage = 3;
     var currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
     Blog.find()
@@ -120,7 +120,7 @@ const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
                 blog.post = req.body.post;
                 blog.save((err, blog) => {
                     if (err) {
-                        res.status(404)
+                        res.status(404) // We didn't use return, so we'd have to use the else statement
                             .json(err);
                     } else {
                         res.status(200)
@@ -151,6 +151,111 @@ const blogDeleteOne = (req, res) => {
     });
 }
 
+const addCommentSubdocument = (req, res, blog) => {
+    if (!blog)
+        return res.status(404).json({ "message": "Blog not found" });
+
+    // Add the comment
+    blog.comments.push({
+        name: req.body.name,
+        email: req.body.email,
+        comment: req.body.comment
+    });
+    // Save it
+    blog.save((err, blog) => {
+        if (err) {
+            return res.status(400)
+                .json(err);
+        }
+        //  Finds last comment in the returned array, since MongoDB returns the entire parent
+        // document, not only the new subdocument
+        let comment = blog.comments[blog.comments.length - 1];
+        res.status(201)
+            .json(comment);
+    });
+}
+
+const addComment = (req, res) => {
+    const blogId = req.params.blogid;
+    if (blogId) {
+        Blog.findById(blogId)
+            .select('comments')
+            .exec((err, blog) => {
+                if (err) {
+                    return res.status(400)
+                        .json(err);
+                }
+                addCommentSubdocument(req, res, blog);
+            });
+    } else {
+        res
+            .status(404)
+            .json({ "message": "Blog not found" });
+    }
+
+}
+
+const fetchComments = (req, res) => {
+    var perPage = 3; // TODO paginate comments
+    var currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
+    Blog.findById(req.params.blogid)
+        .select('comments')
+        .exec((err, blog) => {
+            if (!blog) {
+                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
+                    .json({
+                        "message": "Blog not found"
+                    });
+            } else if (err) {
+                return res.status(404)
+                    .json(err);
+            }
+            res.status(200)
+                .json(blog.comments);
+        });
+}
+
+const deleteComment = (req, res) => {
+    canAccess(req, res, (req, res, author) => {
+        const { blogid, commentid } = req.params;
+        if (blogid) {
+            Blog.findOne(blogid)
+                .exec((err, blog) => {
+                    if (!blog) {
+                        return res
+                            .status(404)
+                            .json({ 'message': 'Blog not found' });
+                    } else if (err) {
+                        return res.status(404)
+                            .json(err);
+                    }
+                    if (blog.comments && blog.comments.length > 0) {
+                        if (!blog.comments.id(commentid)) {
+                            return res
+                                .status(404)
+                                .json({ 'message': 'Comment not found' });
+                        } else {
+                            blog.comments.id(commentid).remove();
+                            blog.save(err => {
+                                if (err) {
+                                    return res
+                                        .status(404)
+                                        .json(err);
+                                } else {
+                                    res.status(204)
+                                        .json(null);
+                                }
+                            });
+                        }
+                    }
+                });
+        } else {
+            res.status(404)
+                .json({ message: "Blog does not exist" });
+        }
+    });
+}
+
 module.exports = {
     blogFetchAll,
     blogFetchSome,
@@ -158,5 +263,8 @@ module.exports = {
     blogReadOne,
     blogCreate,
     blogUpdateOne,
-    blogDeleteOne
+    blogDeleteOne,
+    addComment,
+    fetchComments,
+    deleteComment
 }

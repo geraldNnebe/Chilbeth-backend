@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
 const blogCommentSchema = new mongoose.Schema({
-    userId: {
+    name: {
         type: String,
         required: true
     },
-    comment: String
+    email: String,
+    comment: String,
+    createdOn: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const blogSchema = new mongoose.Schema({
