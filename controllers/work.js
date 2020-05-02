@@ -20,7 +20,7 @@ const workFetchAll = (req, res) => {
 }
 
 const workFetchSome = (req, res) => {
-    var perPage = 12, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
+    var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts string to number
     Work.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
@@ -130,7 +130,7 @@ const workDeleteOne = (req, res) => {
                 .json({ message: "Work does not exist" });
         }
     });
-    // TODO delete uploaded images after deleting blog
+    // TODO delete uploaded images after deleting work
 }
 
 module.exports = {

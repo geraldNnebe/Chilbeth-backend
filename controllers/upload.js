@@ -25,6 +25,17 @@ function resize(path, format, width, height, outputName, callback = () => { }) {
     //         return false;
     //     });
 
+    // With callback
+    // Jimp.read(path, (err, image) => {
+    //     if (err) throw err;
+    //     image // image is automatically jpg
+    //         .resize(width, height)
+    //         .quality(60)
+    //         .write(outputImagePath);
+    //     callback(path);
+    // });
+
+    // With promise
     Jimp.read(path)
         .then(image => {
             return image // image is automatically jpg
