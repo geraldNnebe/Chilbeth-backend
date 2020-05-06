@@ -31,7 +31,7 @@ const login = (req, res) => {
         return res.status(400)
             .json({ "message": "All fields required" });
     }
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err, user, info) => { // 'local', as in passport-local Strategy
         let token;
         if (err) {
             return res.status(404)

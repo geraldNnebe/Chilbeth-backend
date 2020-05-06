@@ -5,11 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var passport = require('passport');
 require('dotenv').config(); // Enables usage of .env environment variables
-require('./models/db');
-require('./config/passport');
-
-var indexRouter = require('./routes/index');
-var apiRouter = require('./routes/api');
+require('./models/db'); // Database setup and schemas
+require('./config/passport'); // Passport setup
 
 var app = express();
 
@@ -22,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(passport.initialize()); // initialize passport after the static paths,
+app.use(passport.initialize()); // Initialize passport after the static paths
 
 // Setup CORS function properly
 app.use('/api', (req, res, next) => { // TODO verify security here
@@ -33,6 +30,10 @@ app.use('/api', (req, res, next) => { // TODO verify security here
   next();
 });
 
+// Require routers
+var indexRouter = require('./routes/index');
+var apiRouter = require('./routes/api');
+// Use the routers
 app.use('/api', apiRouter);
 app.use('/', indexRouter);
 

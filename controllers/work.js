@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const canAccess = require('./checkUser').checkUser; // Used to check user priviledges
-const Work = mongoose.model("Work");
+const Work = mongoose.model('Work');
 
 const workFetchAll = (req, res) => {
     Work.find()

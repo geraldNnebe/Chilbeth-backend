@@ -3,11 +3,11 @@ const canUpload = require('./checkUser').checkUser;
 const Picture = mongoose.model("Picture");
 const formidable = require('formidable');
 const fs = require('fs');
-// const sharp = require('sharp');
+// const sharp = require('sharp'); // I replaced this with jimp
 const Jimp = require('jimp');
 
-function resize(path, format, width, height, outputName, callback = () => { }) {
-    const outputImagePath = __dirname + '/../public/images/uploads/' + outputName + "." + format;
+function resize(path, width, height, outputName, callback = () => { }) {
+    const outputImagePath = __dirname + '/../public/images/uploads/' + outputName + ".jpg";
 
     /* Sharp uses native binaries, and I don't know why that makes it stop randomly on glitch.com */
     // sharp(path)
@@ -49,13 +49,29 @@ function resize(path, format, width, height, outputName, callback = () => { }) {
         });
 }
 
+// Sends files to database and deletes from disk
+const moveFilesToMongoDB = (sortingHash, author) => {
+    let smallImagePath = __dirname + '/../public/images/uploads/small/' + sortingHash + ".jpg";
+    let bigImagePath = __dirname + '/../public/images/uploads/big/' + sortingHash + ".jpg";
+    // store an img in binary in mongo
+    var picture = new Picture;
+    picture.authorEmail = author.email;
+    picture.sortingHash = sortingHash;
+    picture.smallSize.data = fs.readFileSync(smallImagePath);
+    picture.smallSize.contentType = 'image/jpeg';
+    picture.bigSize.data = fs.readFileSync(bigImagePath);
+    picture.bigSize.contentType = 'image/jpeg';
+    return picture; // Return it, so that after saving it we can send status messages from there
+    // .save() called later called on the returned object. Note this is a Mongoose object
+}
+
 function isHex(string) {
     var a = parseInt(string, 16);
     return true; // TODO fix
     return (a.toString(16) === string.toLowerCase());
 }
 
-const upload = (req, res) => {
+const performUpload = (req, res, savingTechnique) => {
     canUpload(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
         new formidable.IncomingForm().parse(req)
             .on('fileBegin', (name, file) => {
@@ -77,35 +93,11 @@ const upload = (req, res) => {
             .on('file', (name, file) => {
                 // When sending the image from the front-end, the sortingHash was the file name
                 let sortingHash = name; // Do not optimize this line, to maintain its clarity
-                if (!isHex(sortingHash)) { // Make sure the sortingHash is sensible (i.e a hex string)
+                if (!isHex(sortingHash)) // Make sure the sortingHash is sensible (i.e a hex string)
                     return res.status(400)
                         .json({ error: "Invalid file upload name" });
-                } else {
-                    // After the upload, save image reference in the database
-                    Picture.create({
-                        author: author.email,
-                        sortingHash: sortingHash
-                    }, (err, picture) => {
-                        if (err) {
-                            res.status(400)
-                                .json(err);
-                        } else { // When we successfully added the image reference to the database
-                            // We resize the uploaded image to two versions
-                            // 300x200 has the aspect ratio 1.5:1 or 3:2
-                            resize(file.path, "jpg", 300, 200, `small/${picture.sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
-                            // 1080x720 has the aspect ratio 1.5:1 or 3:2
-                            resize(file.path, "jpg", 1080, 720, `big/${picture.sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
-                                fs.unlinkSync(originalPathToDelete);
-                                res.status(201)
-                                    .json({
-                                        message: "Image uploaded successfully",
-                                        image: picture,
-                                        further: file // TODO remove this for security
-                                    });
-                            });
-                        }
-                    });
-                }
+                else
+                    savingTechnique(file, sortingHash, author); // Save it the way I want it saved
             })
             .on('error', (err) => {
                 return res.status(400)
@@ -117,6 +109,45 @@ const upload = (req, res) => {
     });
 }
 
+// Performs a simple image upload for artworks and blogs
+const upload = (req, res) => {
+    let savingTechnique = (file, sortingHash, author) => {
+        // 'file' is an object that encapsulates the newly uploaded file
+        // We resize the uploaded image to two versions
+        // 300x200 has the aspect ratio 1.5:1 or 3:2
+        resize(file.path, 300, 200, `small/${sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
+        // 1080x720 has the aspect ratio 1.5:1 or 3:2
+        resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
+            fs.unlinkSync(originalPathToDelete); // Delete original image file (the large image that just got uploaded)
+            moveFilesToMongoDB(sortingHash, author) // Then save the resized versions to the database
+                .save((err, pic) => {
+                    if (err) {
+                        res.status(400)
+                            .json(err);
+                    } else { // When we successfully added the image to the database
+                        // Delete the small and large image files on disk
+                        // fs.unlinkSync(smallImagePath); TODO uncomment these
+                        // fs.unlinkSync(bigImagePath);
+
+                        // We are done
+                        res.status(201)
+                            .json({
+                                message: "Image uploaded successfully",
+                                image: pic
+                            });
+                    }
+                });
+        });
+    };
+    performUpload(req, res, savingTechnique);
+}
+
+// Uploads an image for the landing page
+const uploadLandingPicture = (req, res) => {
+    // TODO remember to delete older images
+}
+
 module.exports = {
-    upload
+    upload,
+    uploadLandingPicture
 };

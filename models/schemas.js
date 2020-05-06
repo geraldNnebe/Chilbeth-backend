@@ -71,6 +71,14 @@ const pictureSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
+    },
+    smallSize: {
+        data: Buffer,
+        contentType: String
+    },
+    bigSize: {
+        data: Buffer,
+        contentType: String
     }
 });
 

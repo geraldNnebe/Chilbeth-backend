@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
-/* Works with controllers/auth.js */
+/* Works with controllers/auth.js, and used when logging in */
 passport.use(new LocalStrategy({
     usernameField: 'email'
 },

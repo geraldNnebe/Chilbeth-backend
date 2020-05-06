@@ -12,8 +12,10 @@ const ctrlBlogs = require('../controllers/blog');
 const ctrlWorks = require('../controllers/work');
 const ctrlAuth = require('../controllers/auth');
 const ctrlUpload = require('../controllers/upload');
+const ctrlDownload = require('../controllers/downloadImage');
 
-// Initialize the router middleware (an authentication middleware in this case) (yes, routers can have middlewares)
+
+// Initialize the router middleware (an authentication middleware in this case) (yes, routers can carry middlewares)
 const expressJwt = expressjwt({ // The "options object" we talked about earlier
     secret: process.env.JWT_SECRET, // The environment variable we created
     userProperty: 'payload' // The name of the property you want to add to the req object to hold the payload
@@ -53,11 +55,15 @@ router.route('/work/:workid')
 //     .post(expressJwt, adminSettings.updateSettings);
 
 /* User authentication */
+// User authentication doesn't make use of expressJwt above
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 
-/* File upload */
+/* Image upload and download */
 router.route('/upload') // TODO enable auth middleware
     .post(expressJwt, ctrlUpload.upload);
+router.get('/images/small/:imageid', ctrlDownload.downloadSmallImage);
+router.get('/images/big/:imageid', ctrlDownload.downloadBigImage);
+
 
 module.exports = router;
