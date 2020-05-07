@@ -5,26 +5,32 @@ const path = require('path');
 const downloadSmallImage = (req, res) => {
         let sortingHash = path.parse(req.params.imageid).name;
         // let name = path.parse(req.params.imageid).ext;
-        Picture.find({ sortingHash: sortingHash }) // TODO filter and send only smallSize
+        Picture.findOne({ sortingHash: sortingHash }) // TODO filter and send only smallSize
                 .exec((err, picture) => {
                         if (err) return next(err);
-                        res.status(200)
-                                .json(picture);
-                        // res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
-                        // res.contentType(picture.smallSize.contentType);
-                        // res.send(picture.smallSize.data);
+                        try {
+                                res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
+                                res.contentType(picture.contentType);
+                                res.status(200).send(Buffer.from(picture.smallSize, 'base64'));
+                        } catch ($e) {
+                                res.status(404);
+                        }
                 });
 }
 
 const downloadBigImage = (req, res) => {
         let sortingHash = path.parse(req.params.imageid).name;
         // let name = path.parse(req.params.imageid).ext;
-        Picture.find({ sortingHash: sortingHash }) // TODO filter and send only big
+        Picture.findOne({ sortingHash: sortingHash }) // TODO filter and send only bigSize
                 .exec((err, picture) => {
                         if (err) return next(err);
-                        // res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
-                        // res.contentType(picture.bigSize.contentType);
-                        // res.send(picture.bigSize.data);
+                        try {
+                                res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
+                                res.contentType(picture.contentType);
+                                res.status(200).send(Buffer.from(picture.bigSize, 'base64'));
+                        } catch ($e) {
+                                res.status(404);
+                        }
                 });
 }
 

@@ -3,6 +3,7 @@ const canUpload = require('./checkUser').checkUser;
 const Picture = mongoose.model("Picture");
 const formidable = require('formidable');
 const fs = require('fs');
+const doAsync = require('doasync'); // To read bigImagePath asynchronously
 // const sharp = require('sharp'); // I replaced this with jimp
 const Jimp = require('jimp');
 
@@ -38,31 +39,40 @@ function resize(path, width, height, outputName, callback = () => { }) {
     // With promise
     Jimp.read(path)
         .then(image => {
-            return image // image is automatically jpg
+            if (image // image is automatically jpg
                 .resize(width, height)
                 .quality(60)
-                .write(outputImagePath)
-                .then(callback(path));
+                .write(outputImagePath))
+                callback(path);
         })
         .catch(err => {
             console.log('Image upload in upload.js failed');
         });
 }
 
+function deleteFile(name) {
+    let filePath = __dirname + '/../public/images/uploads/' + name + ".jpg";
+    fs.unlinkSync(filePath);
+}
+
 // Sends files to database and deletes from disk
-const moveFilesToMongoDB = (sortingHash, author) => {
+const moveFilesToMongoDB = (sortingHash, author, callback) => {
     let smallImagePath = __dirname + '/../public/images/uploads/small/' + sortingHash + ".jpg";
     let bigImagePath = __dirname + '/../public/images/uploads/big/' + sortingHash + ".jpg";
     // store an img in binary in mongo
-    var picture = new Picture;
-    picture.authorEmail = author.email;
-    picture.sortingHash = sortingHash;
-    picture.smallSize.data = fs.readFileSync(smallImagePath);
-    picture.smallSize.contentType = 'image/jpeg';
-    picture.bigSize.data = fs.readFileSync(bigImagePath);
-    picture.bigSize.contentType = 'image/jpeg';
-    return picture; // Return it, so that after saving it we can send status messages from there
-    // .save() called later called on the returned object. Note this is a Mongoose object
+
+    doAsync(fs).readFile(bigImagePath) // We can't read the large image synchronously since it's large. We read it from here, asynchronously, instead
+        .then((bigImage) => {
+            Picture.create({
+                authorEmail: author.email,
+                sortingHash: sortingHash,
+                smallSize: fs.readFileSync(smallImagePath, { encoding: 'base64' }), // We can easily read the small image synchronously
+                bigSize: Buffer.from(bigImage).toString('base64')
+            }, (err, picture) => {
+                callback(err, picture); // Callback, so that after saving it we can send status messages from there
+                // Note that 'picture' is a Mongoose object
+            });
+        });
 }
 
 function isHex(string) {
@@ -119,24 +129,22 @@ const upload = (req, res) => {
         // 1080x720 has the aspect ratio 1.5:1 or 3:2
         resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
             fs.unlinkSync(originalPathToDelete); // Delete original image file (the large image that just got uploaded)
-            moveFilesToMongoDB(sortingHash, author) // Then save the resized versions to the database
-                .save((err, pic) => {
-                    if (err) {
-                        res.status(400)
-                            .json(err);
-                    } else { // When we successfully added the image to the database
-                        // Delete the small and large image files on disk
-                        // fs.unlinkSync(smallImagePath); TODO uncomment these
-                        // fs.unlinkSync(bigImagePath);
+            moveFilesToMongoDB(sortingHash, author, (err, picture) => { // Then save the resized versions to the database
+                if (err)
+                    res.status(400)
+                        .json(err);
+                else // When we successfully added the image to the database
+                    // Delete the small and large image files on disk
+                    deleteFile(`small/${sortingHash}`);
+                    deleteFile(`big/${sortingHash}`);
 
-                        // We are done
-                        res.status(201)
-                            .json({
-                                message: "Image uploaded successfully",
-                                image: pic
-                            });
-                    }
-                });
+                    // We are done
+                    res.status(201)
+                        .json({
+                            message: "Image uploaded successfully",
+                            image: picture
+                        });
+            });
         });
     };
     performUpload(req, res, savingTechnique);
