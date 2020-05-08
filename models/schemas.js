@@ -84,6 +84,17 @@ const pictureSchema = new mongoose.Schema({
     }
 });
 
+const siteSettings = new mongoose.Schema({ // There is only one (1) ever record in this collection
+    static: {
+        type: Number,
+        unique: true,
+        default: 1
+    },
+    landingImageOne: String,
+    landingImageTwo: String,
+    landingImageThree: String
+})
+
 mongoose.model("Blog", blogSchema);
 mongoose.model("Work", workSchema);
 mongoose.model("Picture", pictureSchema);

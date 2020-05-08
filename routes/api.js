@@ -13,6 +13,7 @@ const ctrlWorks = require('../controllers/work');
 const ctrlAuth = require('../controllers/auth');
 const ctrlUpload = require('../controllers/upload');
 const ctrlDownload = require('../controllers/downloadImage');
+const adminSettings = require('../controllers/siteSettings');
 
 
 // Initialize the router middleware (an authentication middleware in this case) (yes, routers can carry middlewares)
@@ -51,8 +52,9 @@ router.route('/work/:workid')
     .delete(expressJwt, ctrlWorks.workDeleteOne);
 
 /* Admin settings route */
-// router.route('/settings')
-//     .post(expressJwt, adminSettings.updateSettings);
+router.route('/settings')
+    .get(adminSettings.readSettings)
+    .put(expressJwt, adminSettings.saveSettings);
 
 /* User authentication */
 // User authentication doesn't make use of expressJwt above

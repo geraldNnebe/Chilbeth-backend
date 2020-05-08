@@ -38,16 +38,14 @@ function resize(path, width, height, outputName, callback = () => { }) {
 
     // With promise
     Jimp.read(path)
-        .then(image => {
-            if (image // image is automatically jpg
+        .then(image => { // image will be automatically encoded in jpg
+            if (image
                 .resize(width, height)
                 .quality(60)
                 .write(outputImagePath))
                 callback(path);
         })
-        .catch(err => {
-            console.log('Image upload in upload.js failed');
-        });
+        .catch(err => console.log('Image upload in upload.js failed'));
 }
 
 function deleteFile(name) {
@@ -135,8 +133,8 @@ const upload = (req, res) => {
                         .json(err);
                 else // When we successfully added the image to the database
                     // Delete the small and large image files on disk
-                    deleteFile(`small/${sortingHash}`);
-                    deleteFile(`big/${sortingHash}`);
+                    // deleteFile(`small/${sortingHash}`);
+                    // deleteFile(`big/${sortingHash}`);
 
                     // We are done
                     res.status(201)
