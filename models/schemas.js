@@ -84,7 +84,7 @@ const pictureSchema = new mongoose.Schema({
     }
 });
 
-const siteSettings = new mongoose.Schema({ // There is only one (1) ever record in this collection
+const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever record in this collection
     static: {
         type: Number,
         unique: true,
@@ -93,8 +93,9 @@ const siteSettings = new mongoose.Schema({ // There is only one (1) ever record 
     landingImageOne: String,
     landingImageTwo: String,
     landingImageThree: String
-})
+});
 
 mongoose.model("Blog", blogSchema);
 mongoose.model("Work", workSchema);
 mongoose.model("Picture", pictureSchema);
+mongoose.model("Setting", siteSettingSchema);

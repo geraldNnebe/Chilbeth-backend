@@ -62,10 +62,13 @@ router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 
 /* Image upload and download */
-router.route('/upload') // TODO enable auth middleware
+router.route('/upload')
     .post(expressJwt, ctrlUpload.upload);
+router.route('/upload_landing_image')
+    .post(expressJwt, ctrlUpload.uploadLandingImage);
 router.get('/images/small/:imageid', ctrlDownload.downloadSmallImage);
 router.get('/images/big/:imageid', ctrlDownload.downloadBigImage);
+router.get('/images/big/blank/:imageid', ctrlDownload.getBlankImage); // Serve the blank image if it's requested. :imageid in this case will be the string 'blank'
 
 
 module.exports = router;

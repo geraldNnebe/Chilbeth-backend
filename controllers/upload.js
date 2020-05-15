@@ -117,6 +117,14 @@ const performUpload = (req, res, savingTechnique) => {
     });
 }
 
+const deleteFromDatabase = (sortingHash) => { // Do not call this function within an unauthenticated operation
+    Picture.findOneAndRemove({ sortingHash: sortingHash })
+        .exec((err, picture) => {
+            if (err)
+                return err;
+        });
+}
+
 // Performs a simple image upload for artworks and blogs
 const upload = (req, res) => {
     let savingTechnique = (file, sortingHash, author) => {
@@ -128,20 +136,21 @@ const upload = (req, res) => {
         resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
             fs.unlinkSync(originalPathToDelete); // Delete original image file (the large image that just got uploaded)
             moveFilesToMongoDB(sortingHash, author, (err, picture) => { // Then save the resized versions to the database
-                if (err)
-                    res.status(400)
-                        .json(err);
-                else // When we successfully added the image to the database
-                    // Delete the small and large image files on disk
-                    // deleteFile(`small/${sortingHash}`);
-                    // deleteFile(`big/${sortingHash}`);
+                // When we successfully added the image to the database
+                // Delete the small and large image files on disk
+                deleteFile(`small/${sortingHash}`);
+                deleteFile(`big/${sortingHash}`);
 
-                    // We are done
-                    res.status(201)
-                        .json({
-                            message: "Image uploaded successfully",
-                            image: picture
-                        });
+                if (err) // Did any error occur?
+                    return res.status(400)
+                        .json(err);
+
+                // We are done if no errors
+                res.status(201)
+                    .json({
+                        message: "Image uploaded successfully",
+                        image: picture
+                    });
             });
         });
     };
@@ -149,11 +158,34 @@ const upload = (req, res) => {
 }
 
 // Uploads an image for the landing page
-const uploadLandingPicture = (req, res) => {
-    // TODO remember to delete older images
+const uploadLandingImage = (req, res) => {
+    let savingTechnique = (file, sortingHash, author) => {
+        resize(file.path, 300, 200, `small/${sortingHash}`);
+        resize(file.path, 1344, 678, `big/${sortingHash}`, (originalPathToDelete) => {
+            fs.unlinkSync(originalPathToDelete);
+            moveFilesToMongoDB(sortingHash, author, (err, picture) => {
+                deleteFile(`small/${sortingHash}`);
+                deleteFile(`big/${sortingHash}`);
+
+                if (err)
+                    return res.status(400)
+                        .json(err);
+
+                // We are done if no errors
+                res.status(201)
+                    .json({
+                        message: "Image uploaded successfully",
+                        image: picture
+                    });
+            });
+        });
+    };
+    // Perform upload
+    performUpload(req, res, savingTechnique);
 }
 
 module.exports = {
     upload,
-    uploadLandingPicture
+    uploadLandingImage,
+    deleteFromDatabase
 };

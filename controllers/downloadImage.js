@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Picture = mongoose.model('Picture');
 const path = require('path');
+const fs = require('fs');
+const stream = require('stream');
 
 const downloadSmallImage = (req, res) => {
         let sortingHash = path.parse(req.params.imageid).name;
@@ -34,7 +36,22 @@ const downloadBigImage = (req, res) => {
                 });
 }
 
+const getBlankImage = (req, res) => {
+        const resource = fs.createReadStream(__dirname + '/../public/images/blank.jpg');
+        const ps = new stream.PassThrough();
+        stream.pipeline(resource, ps, (err) => {
+                if (err) {
+                        console.log(err);
+                        return res.status(404);
+                }
+        });
+        res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
+        res.contentType('image/jpeg');
+        ps.pipe(res);
+}
+
 module.exports = {
         downloadSmallImage,
-        downloadBigImage
+        downloadBigImage,
+        getBlankImage
 }
