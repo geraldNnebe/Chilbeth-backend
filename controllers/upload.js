@@ -184,8 +184,48 @@ const uploadLandingImage = (req, res) => {
     performUpload(req, res, savingTechnique);
 }
 
+// Upload profile picture
+const uploadProfilePicture = (req, res) => {
+    let savingTechnique = (file, sortingHash, author) => {
+        let smallSize = { w: null, h: null }, bigSize = { w: null, h: null }; // The sizes here, should be of portrait orientation
+        if (req.params.type == 'profilePicture') {
+            smallSize.w = 200;
+            smallSize.h = 300;
+            bigSize.w = 382;
+            bigSize.h = 420;
+        } else if (req.params.type == 'profileThumbnail') {
+            smallSize.w = 60;
+            smallSize.h = 60;
+            bigSize.w = 100;
+            bigSize.h = 100;
+        }
+        resize(file.path, smallSize.w, smallSize.h, `small/${sortingHash}`);
+        resize(file.path, bigSize.w, bigSize.h, `big/${sortingHash}`, (originalPathToDelete) => {
+            fs.unlinkSync(originalPathToDelete);
+            moveFilesToMongoDB(sortingHash, author, (err, picture) => {
+                deleteFile(`small/${sortingHash}`);
+                deleteFile(`big/${sortingHash}`);
+
+                if (err)
+                    return res.status(400)
+                        .json(err);
+
+                // We are done if no errors
+                res.status(201)
+                    .json({
+                        message: "Image uploaded successfully",
+                        image: picture
+                    });
+            });
+        });
+    };
+    // Perform upload
+    performUpload(req, res, savingTechnique);
+}
+
 module.exports = {
     upload,
     uploadLandingImage,
-    deleteFromDatabase
+    deleteFromDatabase,
+    uploadProfilePicture
 };

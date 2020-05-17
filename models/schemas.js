@@ -92,7 +92,9 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
     },
     landingImageOne: String,
     landingImageTwo: String,
-    landingImageThree: String
+    landingImageThree: String,
+    profilePicture: String,
+    profileThumbnail: String
 });
 
 mongoose.model("Blog", blogSchema);

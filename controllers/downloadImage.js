@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Picture = mongoose.model('Picture');
 const path = require('path');
 const fs = require('fs');
+const Picture = mongoose.model('Picture');
 const stream = require('stream');
 
 const downloadSmallImage = (req, res) => {
@@ -36,7 +36,7 @@ const downloadBigImage = (req, res) => {
                 });
 }
 
-const getBlankImage = (req, res) => {
+const getBlankImage = (req, res) => { // TODO the blank image is not caching properly
         const resource = fs.createReadStream(__dirname + '/../public/images/blank.jpg');
         const ps = new stream.PassThrough();
         stream.pipeline(resource, ps, (err) => {

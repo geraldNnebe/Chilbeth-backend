@@ -27,7 +27,6 @@ const saveSettings = function (req, res) {
                         landingImageOne: req.body.landingImageOne,
                         landingImageTwo: req.body.landingImageTwo,
                         landingImageThree: req.body.landingImageThree
-                        // TODO add other records here
                     }, (err, newRecord) => {
                         if (err) res.status(500).json(err);
                         else {
@@ -42,6 +41,10 @@ const saveSettings = function (req, res) {
                         settings.landingImageTwo = req.body.landingImageTwo;
                     if (req.body.landingImageThree !== '')
                         settings.landingImageThree = req.body.landingImageThree;
+                    if (req.body.profilePicture !== '')
+                        settings.profilePicture = req.body.profilePicture;
+                    if (req.body.profileThumbnail !== '')
+                        settings.profileThumbnail = req.body.profileThumbnail;
                     // TODO add other records here
                     settings.save((err, updatedSettings) => {
                         if (err) res.status(500).json(err);
