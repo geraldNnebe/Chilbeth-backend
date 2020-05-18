@@ -45,7 +45,36 @@ const saveSettings = function (req, res) {
                         settings.profilePicture = req.body.profilePicture;
                     if (req.body.profileThumbnail !== '')
                         settings.profileThumbnail = req.body.profileThumbnail;
-                    // TODO add other records here
+
+                    if (req.body.name !== '')
+                        settings.name = req.body.name;
+                    if (req.body.occupation !== '')
+                        settings.occupation = req.body.occupation;
+                    if (req.body.desc !== '')
+                        settings.desc = req.body.desc;
+                    if (req.body.about_heading !== '')
+                        settings.about_heading = req.body.about_heading;
+                    if (req.body.about !== '')
+                        settings.about = req.body.about;
+                    if (req.body.phone !== '')
+                        settings.phone = req.body.phone;
+                    if (req.body.email !== '')
+                        settings.email = req.body.email;
+                    if (req.body.facebook !== '')
+                        settings.facebook = req.body.facebook;
+                    if (req.body.twitter !== '')
+                        settings.twitter = req.body.twitter;
+                    if (req.body.youtube !== '')
+                        settings.youtube = req.body.youtube;
+                    if (req.body.city !== '')
+                        settings.city = req.body.city;
+                    if (req.body.district !== '')
+                        settings.district = req.body.district;
+                    if (req.body.country !== '')
+                        settings.country = req.body.country;
+                    if (req.body.opening_times !== '')
+                        settings.opening_times = req.body.opening_times;
+                    // Add other records here
                     settings.save((err, updatedSettings) => {
                         if (err) res.status(500).json(err);
                         else {

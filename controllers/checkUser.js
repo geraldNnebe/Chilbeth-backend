@@ -19,6 +19,7 @@ const checkUser = (req, res, callback) => {
                 } else if (user.admin !== true) // Makes sure user has admin priviledges
                     return res.status(401)
                         .json({ "message": "Unauthorized operation" });
+                // TODO access log for operations
                 callback(req, res, user);
             });
     } else {

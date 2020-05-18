@@ -94,7 +94,64 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
     landingImageTwo: String,
     landingImageThree: String,
     profilePicture: String,
-    profileThumbnail: String
+    profileThumbnail: String,
+
+    name: {
+        type: String,
+        maxlength: 20
+    },
+    occupation: {
+        type: String,
+        maxlength: 20
+    },
+    desc: {
+        type: String,
+        maxlength: 95
+    },
+    about_heading: {
+        type: String,
+        maxlength: 55
+    },
+    about: {
+        type: String,
+        maxlength: 1000
+    },
+    phone: {
+        type: String,
+        maxlength: 16
+    },
+    email: {
+        type: String,
+        maxlength: 55
+    },
+    facebook: {
+        type: String,
+        maxlength: 55
+    },
+    twitter: {
+        type: String,
+        maxlength: 55
+    },
+    youtube: {
+        type: String,
+        maxlength: 55
+    },
+    city: {
+        type: String,
+        maxlength: 16
+    },
+    country: {
+        type: String,
+        maxlength: 16
+    },
+    district: {
+        type: String,
+        maxlength: 16
+    },
+    opening_times: {
+        type: String,
+        maxlength: 55
+    }
 });
 
 mongoose.model("Blog", blogSchema);
