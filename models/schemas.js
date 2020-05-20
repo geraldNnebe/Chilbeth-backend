@@ -136,6 +136,10 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
         type: String,
         maxlength: 55
     },
+    instagram: {
+        type: String,
+        maxlength: 55
+    },
     city: {
         type: String,
         maxlength: 16

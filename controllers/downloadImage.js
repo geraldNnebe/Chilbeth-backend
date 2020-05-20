@@ -22,6 +22,8 @@ const downloadSmallImage = (req, res) => {
 
 const downloadBigImage = (req, res) => {
         let sortingHash = path.parse(req.params.imageid).name;
+        if (sortingHash == 'undefined') // At times, a variable may produce the string 'undefined'
+                return getBlankImage(req, res);
         // let name = path.parse(req.params.imageid).ext;
         Picture.findOne({ sortingHash: sortingHash }) // TODO filter and send only bigSize
                 .exec((err, picture) => {

@@ -66,6 +66,8 @@ const saveSettings = function (req, res) {
                         settings.twitter = req.body.twitter;
                     if (req.body.youtube !== '')
                         settings.youtube = req.body.youtube;
+                    if (req.body.instagram !== '')
+                        settings.instagram = req.body.instagram;
                     if (req.body.city !== '')
                         settings.city = req.body.city;
                     if (req.body.district !== '')
