@@ -33,7 +33,13 @@ const blogSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    comments: [blogCommentSchema]
+    comments: [blogCommentSchema],
+    commentCount: {
+        type: Number,
+        required: true,
+        default: 0,
+        min: 0
+    }
 });
 
 const workSchema = new mongoose.Schema({

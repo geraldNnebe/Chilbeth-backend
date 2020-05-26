@@ -180,13 +180,19 @@ const addComment = (req, res) => {
     const blogId = req.params.blogid;
     if (blogId) {
         Blog.findById(blogId)
-            .select('comments')
             .exec((err, blog) => {
-                if (err) {
+                if (err)
                     return res.status(400)
                         .json(err);
+                if (req.body.comment != '' && req.body.name != '') {
+                    // Increment blog comment count
+                    blog.commentCount = blog.commentCount + 1;
+                    blog.save((err, blog) => { addCommentSubdocument(req, res, blog) });
+                } else {
+                    res
+                        .status(400)
+                        .json({ "message": "Comment not added" });
                 }
-                addCommentSubdocument(req, res, blog);
             });
     } else {
         res
@@ -237,6 +243,7 @@ const deleteComment = (req, res) => {
                                 .json({ 'message': 'Comment not found' });
                         } else {
                             blog.comments.id(commentid).remove();
+                            blog.commentCount = blog.commentCount - 1;
                             blog.save(err => {
                                 if (err) {
                                     return res
