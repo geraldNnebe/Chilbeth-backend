@@ -57,7 +57,7 @@ Since nodemon listens for this same event, you don’t want to capture it each t
 preventing nodemon from working properly.
 */
 
-/* Tip: Kill process running on port 3000 in case you have an error stating that a process is using
+/* Tip: To kill a process running on port 3000 in case you have an error stating that a process is using
         that port: fuser 3000/tcp to view the PID, fuser -k 3000/tcp to kill the process */
 
 require("./users");

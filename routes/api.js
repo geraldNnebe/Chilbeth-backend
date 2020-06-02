@@ -64,6 +64,8 @@ router.post('/login', ctrlAuth.login);
 /* Image upload */
 router.route('/upload')
     .post(expressJwt, ctrlUpload.upload);
+router.route('/upload/and_delete_too')
+    .post(expressJwt, ctrlUpload.uploadAndDelete);
 router.route('/upload_landing_image')
     .post(expressJwt, ctrlUpload.uploadLandingImage);
 router.route('/upload_profile_picture/:type')

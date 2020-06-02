@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Blog = mongoose.model("Blog");
 const canAccess = require('../controllers/checkUser').checkUser;
 const getUser = require('../controllers/user');
+const deleteImageFromDB = require('./upload').deleteFromDatabase;
 
 const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it will be too long
     Blog.find()
@@ -106,6 +107,10 @@ const blogCreate = function (req, res) {
 
 const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
     canAccess(req, res, (req, res, author) => {
+        // Make sure the new blog image was uploaded using the api route that calls uploadAndDelete().
+        // No need of deleting the previous blog image, because it should have already been 
+        // deleted if the front-end used the right route that calls uploadAndDelete()
+        // If not, then we'll have a data leak
         Blog.findById(req.params.blogid)
             .exec((err, blog) => {
                 if (!blog) {
@@ -118,6 +123,7 @@ const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
                 blog.title = req.body.title;
                 blog.desc = req.body.desc;
                 blog.post = req.body.post;
+                blog.imageSortHash = req.body.sortingHash,
                 blog.save((err, blog) => {
                     if (err) {
                         res.status(404) // We didn't use return, so we'd have to use the else statement
@@ -141,6 +147,8 @@ const blogDeleteOne = (req, res) => {
                         return res.status(404)
                             .json(err);
                     }
+                    // Delete uploaded images after deleting blog
+                    deleteImageFromDB(blog.imageSortHash);
                     res.status(204)
                         .json(null);
                 })
@@ -148,7 +156,6 @@ const blogDeleteOne = (req, res) => {
             res.status(404)
                 .json({ message: "Blog does not exist" });
         }
-        // TODO delete uploaded images after deleting blog
     });
 }
 
@@ -263,6 +270,51 @@ const deleteComment = (req, res) => {
         }
     });
 }
+
+// import mongoose from 'mongoose'
+
+// const PostSchema = new mongoose.Schema({
+//     title: { type: String, default: '', trim: true },
+//     body: { type: String, default: '', trim: true },
+// });
+
+// PostSchema.index({ title: "text", body: "text",},
+//     { weights: { title: 5, body: 3, } })
+
+// PostSchema.statics = {
+//     searchPartial: function(q, callback) {
+//         return this.find({
+//             $or: [
+//                 { "title": new RegExp(q, "gi") },
+//                 { "body": new RegExp(q, "gi") },
+//             ]
+//         }, callback);
+//     },
+
+//     searchFull: function (q, callback) {
+//         return this.find({
+//             $text: { $search: q, $caseSensitive: false }
+//         }, callback)
+//     },
+
+//     search: function(q, callback) {
+//         this.searchFull(q, (err, data) => {
+//             if (err) return callback(err, data);
+//             if (!err && data.length) return callback(err, data);
+//             if (!err && data.length === 0) return this.searchPartial(q, callback);
+//         });
+//     },
+// }
+
+// export default mongoose.models.Post || mongoose.model('Post', PostSchema)
+
+//How to use:
+
+// import Post from '../models/post'
+
+// Post.search('Firs', function(err, data) {
+//    console.log(data);
+// })
 
 module.exports = {
     blogFetchAll,

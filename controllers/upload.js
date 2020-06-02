@@ -74,6 +74,8 @@ const moveFilesToMongoDB = (sortingHash, author, callback) => {
 }
 
 function isHex(string) {
+    // NOTE the function uploadAndDelete() allows a string to have '#' in-between
+    // So we're going to allow this test pass for strings that contain exactly one '#' in them
     var a = parseInt(string, 16);
     return true; // TODO fix
     return (a.toString(16) === string.toLowerCase());
@@ -82,7 +84,7 @@ function isHex(string) {
 const performUpload = (req, res, savingTechnique) => {
     canUpload(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
         new formidable.IncomingForm().parse(req)
-            .on('fileBegin', (name, file) => {
+            .on('fileBegin', (name, file) => { // JavaScript 'on' events
                 file.path = __dirname + '/../public/images/uploads/' + file.name
             })
             // .on('field', (name, field) => {
@@ -101,10 +103,11 @@ const performUpload = (req, res, savingTechnique) => {
             .on('file', (name, file) => {
                 // When sending the image from the front-end, the sortingHash was the file name
                 let sortingHash = name; // Do not optimize this line, to maintain its clarity
-                if (!isHex(sortingHash)) // Make sure the sortingHash is sensible (i.e a hex string)
+                if (!isHex(sortingHash)) { // Make sure the sortingHash is sensible (i.e a hex string)
+                    fs.unlinkSync(file.path);
                     return res.status(400)
                         .json({ error: "Invalid file upload name" });
-                else
+                } else
                     savingTechnique(file, sortingHash, author); // Save it the way I want it saved
             })
             .on('error', (err) => {
@@ -146,6 +149,38 @@ const upload = (req, res) => {
                         .json(err);
 
                 // We are done if no errors
+                res.status(201)
+                    .json({
+                        message: "Image uploaded successfully",
+                        image: picture
+                    });
+            });
+        });
+    };
+    performUpload(req, res, savingTechnique);
+}
+
+// Performs an upload, and at the same time deletes an existing image using its sorting hash
+const uploadAndDelete = (req, res) => {
+    let savingTechnique = (file, sortingHashes, author) => {
+        // From the front-end, the sortingHash of the Image to upload
+        // and the Image to delete, were joined together in one string
+        // and separated by '#'
+        sortingHashes = sortingHashes.split('#');
+        sortingHash = sortingHashes[0];
+        resize(file.path, 300, 200, `small/${sortingHash}`);
+        resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {
+            fs.unlinkSync(originalPathToDelete);
+            moveFilesToMongoDB(sortingHash, author, (err, picture) => {
+                deleteFile(`small/${sortingHash}`);
+                deleteFile(`big/${sortingHash}`);
+
+                if (err)
+                    return res.status(400)
+                        .json(err);
+
+                // We are done if no errors
+                deleteFromDatabase(sortingHashes[1]); // Delete what we should delete
                 res.status(201)
                     .json({
                         message: "Image uploaded successfully",
@@ -226,6 +261,7 @@ const uploadProfilePicture = (req, res) => {
 module.exports = {
     upload,
     uploadLandingImage,
+    uploadAndDelete,
     deleteFromDatabase,
     uploadProfilePicture
 };
