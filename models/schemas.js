@@ -198,7 +198,18 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
     }
 });
 
+const newsletterSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 10,
+        maxlength: 55
+    }
+});
+
 mongoose.model("Blog", blogSchema);
 mongoose.model("Work", workSchema);
 mongoose.model("Picture", pictureSchema);
 mongoose.model("Setting", siteSettingSchema);
+mongoose.model("Newsletter", newsletterSchema);

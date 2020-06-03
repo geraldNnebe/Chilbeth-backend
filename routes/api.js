@@ -13,6 +13,7 @@ const ctrlWorks = require('../controllers/work');
 const ctrlAuth = require('../controllers/auth');
 const ctrlUpload = require('../controllers/upload');
 const ctrlDownload = require('../controllers/downloadImage');
+const ctrlNewsletter = require('../controllers/newsletter');
 const adminSettings = require('../controllers/siteSettings');
 
 
@@ -51,6 +52,11 @@ router.route('/work/:workid')
     .get(ctrlWorks.workReadOne)
     .put(expressJwt, ctrlWorks.workUpdateOne)
     .delete(expressJwt, ctrlWorks.workDeleteOne);
+
+/* Newsletter routes */
+router.route('/newsletter')
+    .get(expressJwt, ctrlNewsletter.contactFetchAll)
+    .post(ctrlNewsletter.contactCreate);
 
 /* Admin settings route */
 router.route('/settings')
