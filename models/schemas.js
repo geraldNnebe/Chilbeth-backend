@@ -42,6 +42,41 @@ const blogSchema = new mongoose.Schema({
     }
 });
 
+// Index for blogs
+blogSchema.index({ title: "text", desc: "text", post: "text" }, {
+    weights: {
+        title: 5,
+        desc: 3,
+        body: 3
+    }
+});
+
+blogSchema.statics = {
+    searchPartial: function (q, callback) {
+        return this.find({
+            $or: [
+                { "title": new RegExp(q, "gi") },
+                { "desc": new RegExp(q, "gi") },
+                { "post": new RegExp(q, "gi") },
+            ]
+        }, callback);
+    },
+
+    searchFull: function (q, callback) {
+        return this.find({
+            $text: { $search: q, $caseSensitive: false }
+        }, callback)
+    },
+
+    search: function (q, callback) {
+        this.searchFull(q, (err, data) => {
+            if (err) return callback(err, data);
+            if (!err && data.length) return callback(err, data);
+            if (!err && data.length === 0) return this.searchPartial(q, callback);
+        });
+    },
+}
+
 const workSchema = new mongoose.Schema({
     authorEmail: {
         type: String,
@@ -63,8 +98,7 @@ const workSchema = new mongoose.Schema({
     createdOn: {
         type: Date,
         default: Date.now
-    },
-    comments: [blogCommentSchema]
+    }
 });
 
 const pictureSchema = new mongoose.Schema({

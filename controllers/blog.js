@@ -66,6 +66,13 @@ const blogFetchSome = (req, res) => { // TODO should not fetch the actual post, 
         });
 }
 
+const blogSearch = (req, res) => {
+    Blog.search(req.query.terms, (err, data) => {
+        res.status(200)
+            .json(data);
+    })
+}
+
 const blogFetchRecent = (req, res) => {
     blogFetchSome(req, res, 4);
 }
@@ -124,15 +131,15 @@ const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
                 blog.desc = req.body.desc;
                 blog.post = req.body.post;
                 blog.imageSortHash = req.body.sortingHash,
-                blog.save((err, blog) => {
-                    if (err) {
-                        res.status(404) // We didn't use return, so we'd have to use the else statement
-                            .json(err);
-                    } else {
-                        res.status(200)
-                            .json(blog);
-                    }
-                });
+                    blog.save((err, blog) => {
+                        if (err) {
+                            res.status(404) // We didn't use return, so we'd have to use the else statement
+                                .json(err);
+                        } else {
+                            res.status(200)
+                                .json(blog);
+                        }
+                    });
             });
     });
 }
@@ -147,7 +154,7 @@ const blogDeleteOne = (req, res) => {
                         return res.status(404)
                             .json(err);
                     }
-                    // Delete uploaded images after deleting blog
+                    // Delete uploaded image after deleting blog
                     deleteImageFromDB(blog.imageSortHash);
                     res.status(204)
                         .json(null);
@@ -271,54 +278,10 @@ const deleteComment = (req, res) => {
     });
 }
 
-// import mongoose from 'mongoose'
-
-// const PostSchema = new mongoose.Schema({
-//     title: { type: String, default: '', trim: true },
-//     body: { type: String, default: '', trim: true },
-// });
-
-// PostSchema.index({ title: "text", body: "text",},
-//     { weights: { title: 5, body: 3, } })
-
-// PostSchema.statics = {
-//     searchPartial: function(q, callback) {
-//         return this.find({
-//             $or: [
-//                 { "title": new RegExp(q, "gi") },
-//                 { "body": new RegExp(q, "gi") },
-//             ]
-//         }, callback);
-//     },
-
-//     searchFull: function (q, callback) {
-//         return this.find({
-//             $text: { $search: q, $caseSensitive: false }
-//         }, callback)
-//     },
-
-//     search: function(q, callback) {
-//         this.searchFull(q, (err, data) => {
-//             if (err) return callback(err, data);
-//             if (!err && data.length) return callback(err, data);
-//             if (!err && data.length === 0) return this.searchPartial(q, callback);
-//         });
-//     },
-// }
-
-// export default mongoose.models.Post || mongoose.model('Post', PostSchema)
-
-//How to use:
-
-// import Post from '../models/post'
-
-// Post.search('Firs', function(err, data) {
-//    console.log(data);
-// })
-
 module.exports = {
     blogFetchAll,
     blogFetchSome,
+    blogSearch,
     blogFetchRecent,
     blogReadOne,
     blogCreate,

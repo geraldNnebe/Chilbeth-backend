@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const canAccess = require('./checkUser').checkUser; // Used for checking user priviledges
 const Work = mongoose.model('Work');
+const deleteImageFromDB = require('./upload').deleteFromDatabase;
 
 const workFetchAll = (req, res) => {
     Work.find()
@@ -85,8 +86,8 @@ const workCreate = function (req, res) {
     });
 };
 
-const workUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
-    canAccess(req, res, (req, res, author) => {
+const workUpdateOne = (req, res) => {
+    canAccess(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
         Work.findById(req.params.workid)
             .exec((err, work) => {
                 if (!work) {
@@ -122,6 +123,8 @@ const workDeleteOne = (req, res) => {
                         return res.status(404)
                             .json(err);
                     }
+                    // Delete uploaded image after deleting work
+                    deleteImageFromDB(work.imageSortHash);
                     res.status(204)
                         .json(null);
                 })
