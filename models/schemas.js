@@ -130,6 +130,7 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
         unique: true,
         default: 1
     },
+    siteLogo: String,
     landingImageOne: String,
     landingImageTwo: String,
     landingImageThree: String,

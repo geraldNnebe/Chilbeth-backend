@@ -75,6 +75,10 @@ router.route('/upload/and_delete_too')
     .post(expressJwt, ctrlUpload.uploadAndDelete);
 router.route('/upload_landing_image')
     .post(expressJwt, ctrlUpload.uploadLandingImage);
+router.route('/upload_site_logo')
+    .post(expressJwt, ctrlUpload.uploadSiteLogo);
+router.route('/upload_artwork')
+    .post(expressJwt, ctrlUpload.uploadArtwork);
 router.route('/upload_profile_picture/:type')
     .post(expressJwt, ctrlUpload.uploadProfilePicture);
 /* Image download */

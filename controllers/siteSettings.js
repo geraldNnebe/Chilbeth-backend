@@ -35,6 +35,8 @@ const saveSettings = function (req, res) {
                         }
                     });
                 } else {
+                    if (req.body.siteLogo !== '')
+                        settings.siteLogo = req.body.siteLogo;
                     if (req.body.landingImageOne !== '')
                         settings.landingImageOne = req.body.landingImageOne;
                     if (req.body.landingImageTwo !== '')
