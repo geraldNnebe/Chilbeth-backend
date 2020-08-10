@@ -11,11 +11,11 @@ const expressjwt = require('express-jwt');
 const ctrlBlogs = require('../controllers/blog');
 const ctrlWorks = require('../controllers/work');
 const ctrlAuth = require('../controllers/auth');
+const ctrlPwd = require('../controllers/change-password');
 const ctrlUpload = require('../controllers/upload');
 const ctrlDownload = require('../controllers/downloadImage');
 const ctrlNewsletter = require('../controllers/newsletter');
-const adminSettings = require('../controllers/siteSettings');
-
+const adminSettings = require('../controllers/site-settings');
 
 // Initialize the router middleware (an authentication middleware in this case) (yes, routers can carry middlewares)
 const expressJwt = expressjwt({ // The "options object" we talked about earlier
@@ -67,6 +67,7 @@ router.route('/settings')
 // User authentication doesn't make use of expressJwt above
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
+router.route('/change_password').put(expressJwt, ctrlPwd.changePassword);
 
 /* Image upload */
 router.route('/upload')

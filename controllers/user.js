@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const canAccess = require('../controllers/checkUser').checkUser;
+const canAccess = require('./check-user').checkUser;
 const User = mongoose.model("User");
 
 const getName = (email) => {

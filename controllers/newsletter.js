@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Newsletter = mongoose.model("Newsletter");
-const canAccess = require('../controllers/checkUser').checkUser;
+const canAccess = require('./check-user').checkUser;
 
 const contactFetchAll = (req, res) => { // TODO should not fetch the post, since it will be too long
     canAccess(req, res, (req, res, author) => {

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const register = (req, res) => {
+    return res.status(500); // TODO outcomment this to accept new user registrations
     if (!req.body.name || !req.body.email || !req.body.password) {
         return res
             .status(400)
@@ -11,7 +12,7 @@ const register = (req, res) => {
     const user = new User();
     user.name = req.body.name;
     user.email = req.body.email;
-    user.admin = true; // TODO edit this
+    user.admin = false; // TODO set this to true for admin registrations
     user.setPassword(req.body.password);
     user.save((err) => {
         if (err) {
@@ -31,7 +32,8 @@ const login = (req, res) => {
         return res.status(400)
             .json({ "message": "All fields required" });
     }
-    passport.authenticate('local', (err, user, info) => { // 'local', as in passport-local Strategy
+    // 'local', as in passport-local Strategy
+    passport.authenticate('local', (err, user, info) => {
         let token;
         if (err) {
             return res.status(404)

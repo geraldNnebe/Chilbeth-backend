@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const canAccess = require('./checkUser').checkUser; // Used for checking user priviledges
+const canAccess = require('./check-user').checkUser; // Used for checking user priviledges
 const Work = mongoose.model('Work');
 const deleteImageFromDB = require('./upload').deleteFromDatabase;
 

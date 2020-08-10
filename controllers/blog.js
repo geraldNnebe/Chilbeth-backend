@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Blog = mongoose.model("Blog");
-const canAccess = require('../controllers/checkUser').checkUser;
+const canAccess = require('./check-user').checkUser;
 const getUser = require('../controllers/user');
 const deleteImageFromDB = require('./upload').deleteFromDatabase;
 
@@ -8,7 +8,9 @@ const blogFetchAll = (req, res) => { // TODO should not fetch the post, since it
     Blog.find()
         .exec((err, blogs) => {
             if (!blogs) {
-                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
+                // The return statement here stops every other thing from running in the function,
+                // after res.status().json() has finished executing
+                return res.status(404)
                     .json({
                         "message": "no blogs"
                     });
@@ -36,7 +38,9 @@ const blogFetchSome = (req, res) => { // TODO should not fetch the actual post, 
         .sort({ createdOn: 'desc' })
         .exec((err, blogs) => {
             if (!blogs) {
-                return res.status(404) // The return statement here stops every other thing from running in the function, after res.status().json() has finished executing
+                // The return statement here stops every other thing from running in the function,
+                // after res.status().json() has finished executing
+                return res.status(404)
                     .json({
                         "message": "no blogs"
                     });

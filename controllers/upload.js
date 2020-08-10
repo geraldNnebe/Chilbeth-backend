@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const canUpload = require('./checkUser').checkUser;
+const canUpload = require('./check-user').checkUser;
 const Picture = mongoose.model("Picture");
 const formidable = require('formidable');
 const fs = require('fs');
@@ -268,8 +268,6 @@ const uploadSiteLogo = (req, res) => {
         resize(file.path, 300, 200, `small/${sortingHash}`); // useless here
         // Copy file to bigImagePath, instead of resizing it as usual. It's a PNG image
         fs.copyFile(file.path, bigImagePath, (err) => {
-            fs.unlinkSync(file.path); // Delete the initial original upload
-
             // Store image as binary in mongo db
             doAsync(fs).readFile(bigImagePath) // We can't read the large image synchronously since it's large. We read it from here, asynchronously, instead
                 .then((bigImage) => {
@@ -279,6 +277,7 @@ const uploadSiteLogo = (req, res) => {
                         bigSize: Buffer.from(bigImage).toString('base64'),
                         contentType: "image/png"
                     }, (err, picture) => {
+                        fs.unlinkSync(file.path); // Delete the initial original upload
                         fs.unlinkSync(smallImagePath);
                         fs.unlinkSync(bigImagePath);
 

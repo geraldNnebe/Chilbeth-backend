@@ -149,6 +149,14 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
         type: String,
         maxlength: 95
     },
+    landing_message_heading: {
+        type: String,
+        maxlength: 160
+    },
+    landing_message: {
+        type: String,
+        maxlength: 1500
+    },
     about_heading: {
         type: String,
         maxlength: 55
