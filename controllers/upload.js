@@ -134,8 +134,8 @@ const upload = (req, res) => {
     let savingTechnique = (file, sortingHash, author) => {
         // 'file' is an object that encapsulates the newly uploaded file
         // We resize the uploaded image to two versions
-        // 300x200 has the aspect ratio 1.5:1 or 3:2
-        resize(file.path, 300, 200, `small/${sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
+        // 450x300 has the aspect ratio 1.5:1 or 3:2
+        resize(file.path, 450, 300, `small/${sortingHash}`); // This is an asynchronous call, so if it doesn't complete before the next, we are in trouble. OMG I'm so lazy
         // 1080x720 has the aspect ratio 1.5:1 or 3:2
         resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {  // aspect ratio 3:2
             moveFilesToMongoDB(sortingHash, author, (err, picture) => { // Then save the resized versions to the database
@@ -170,7 +170,7 @@ const uploadAndDelete = (req, res) => {
         // and separated by '#'
         sortingHashes = sortingHashes.split('#');
         sortingHash = sortingHashes[0];
-        resize(file.path, 300, 200, `small/${sortingHash}`);
+        resize(file.path, 450, 300, `small/${sortingHash}`);
         resize(file.path, 1080, 720, `big/${sortingHash}`, (originalPathToDelete) => {
             moveFilesToMongoDB(sortingHash, author, (err, picture) => {
                 fs.unlinkSync(originalPathToDelete);
@@ -207,7 +207,7 @@ const uploadArtwork = (req, res) => {
             height = 1080;
             width = ratioWidthFromHeight(aspectRatio, 1, height);
         }
-        resize(file.path, 300, 200, `small/${sortingHash}`);
+        resize(file.path, 450, 300, `small/${sortingHash}`);
         resize(file.path, width, height, `big/${sortingHash}`, (originalPathToDelete) => {
             moveFilesToMongoDB(sortingHash, author, (err, picture) => {
                 fs.unlinkSync(originalPathToDelete);
@@ -233,7 +233,7 @@ const uploadArtwork = (req, res) => {
 // Uploads an image for the landing page
 const uploadLandingImage = (req, res) => {
     let savingTechnique = (file, sortingHash, author) => {
-        resize(file.path, 300, 200, `small/${sortingHash}`);
+        resize(file.path, 450, 300, `small/${sortingHash}`);
         resize(file.path, 1344, 678, `big/${sortingHash}`, (originalPathToDelete) => {
             moveFilesToMongoDB(sortingHash, author, (err, picture) => {
                 fs.unlinkSync(originalPathToDelete);
@@ -260,12 +260,8 @@ const uploadLandingImage = (req, res) => {
 // Uploads an image for the landing page
 const uploadSiteLogo = (req, res) => {
     let savingTechnique = (file, sortingHash, author) => {
-        // Anything that has to do with smallImage is useless for a site logo, but we
-        // need it here to fill up our db properly anyway
-        let smallImagePath = __dirname + '/../public/images/uploads/small/' + sortingHash + ".jpg";
         let bigImagePath = __dirname + '/../public/images/uploads/big/' + sortingHash + ".png";
 
-        resize(file.path, 300, 200, `small/${sortingHash}`); // useless here
         // Copy file to bigImagePath, instead of resizing it as usual. It's a PNG image
         fs.copyFile(file.path, bigImagePath, (err) => {
             // Store image as binary in mongo db
@@ -273,12 +269,11 @@ const uploadSiteLogo = (req, res) => {
                 .then((bigImage) => {
                     Picture.create({
                         sortingHash: sortingHash,
-                        smallSize: fs.readFileSync(smallImagePath, { encoding: 'base64' }), // useless here
+                        smallSize: 'null',
                         bigSize: Buffer.from(bigImage).toString('base64'),
                         contentType: "image/png"
                     }, (err, picture) => {
                         fs.unlinkSync(file.path); // Delete the initial original upload
-                        fs.unlinkSync(smallImagePath);
                         fs.unlinkSync(bigImagePath);
 
                         if (err)
@@ -305,10 +300,10 @@ const uploadProfilePicture = (req, res) => {
     let savingTechnique = (file, sortingHash, author) => {
         let smallSize = { w: null, h: null }, bigSize = { w: null, h: null }; // The sizes here, should be of portrait orientation
         if (req.params.type == 'profilePicture') {
-            smallSize.w = 200;
-            smallSize.h = 300;
-            bigSize.w = 382;
-            bigSize.h = 420;
+            smallSize.w = 300;
+            smallSize.h = 450;
+            bigSize.w = 400;
+            bigSize.h = 600;
         } else if (req.params.type == 'profileThumbnail') {
             smallSize.w = 60;
             smallSize.h = 60;

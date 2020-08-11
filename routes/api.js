@@ -43,11 +43,18 @@ router.route('/blog/:blogid/comment/:page') // :page for page number when paging
     .get(ctrlBlogs.fetchComments);
 
 /* Work routes */
-router.route('/work')
-    .get(ctrlWorks.workFetchAll) // TODO Caution: payload size may be too much
+router.route('/work_categories')
+    .get(ctrlWorks.workCategoryFetchAll)
+    .post(expressJwt, ctrlWorks.workCategoryCreate);
+router.route('/work_categories/:categoryid')
+    .put(expressJwt, ctrlWorks.workCategoryUpdate)
+    .delete(expressJwt, ctrlWorks.workCategoryDelete);
+router.route('/work/:categoryid')
     .post(expressJwt, ctrlWorks.workCreate); // Note the expressJwt router middleware
-router.route('/work/p/:page')
+router.route('/work/p/:page') // Fetch work in the "featured list"
     .get(ctrlWorks.workFetchSome);
+router.route('/work/:categoryid/p/:page') // Fetch work in a category
+    .get(ctrlWorks.workFetchSomeByCategory);
 router.route('/work/:workid')
     .get(ctrlWorks.workReadOne)
     .put(expressJwt, ctrlWorks.workUpdateOne)
@@ -86,6 +93,5 @@ router.route('/upload_profile_picture/:type')
 router.get('/images/small/:imageid', ctrlDownload.downloadSmallImage);
 router.get('/images/big/:imageid', ctrlDownload.downloadBigImage);
 router.get('/images/big/blank/:imageid', ctrlDownload.getBlankImage); // Serve the blank image if it's requested. :imageid in this case will be the string 'blank'
-
 
 module.exports = router;

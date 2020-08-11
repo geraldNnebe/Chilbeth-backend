@@ -77,6 +77,18 @@ blogSchema.statics = {
     },
 }
 
+const workCategorySchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    numberOfWorks: {
+        type: Number,
+        default: 0
+    }
+});
+
 const workSchema = new mongoose.Schema({
     authorEmail: {
         type: String,
@@ -86,6 +98,14 @@ const workSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
+    },
+    categoryId: {
+        type: String,
+        required: true
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false
     },
     imageSortHash: {
         type: String,
@@ -218,6 +238,7 @@ const newsletterSchema = new mongoose.Schema({
 });
 
 mongoose.model("Blog", blogSchema);
+mongoose.model("WorkCategory", workCategorySchema);
 mongoose.model("Work", workSchema);
 mongoose.model("Picture", pictureSchema);
 mongoose.model("Setting", siteSettingSchema);
