@@ -105,7 +105,7 @@ const workFetchAll = (req, res) => {
 
 const workFetchSome = (req, res) => {
     var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts a string to number
-    Work.find({ isFeatured: true })
+    Work.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
         .sort({ createdOn: 'desc' })
@@ -117,7 +117,7 @@ const workFetchSome = (req, res) => {
                 return res.status(404)
                     .json(err);
             }
-            Work.count({ isFeatured: true }).exec((err, count) => {
+            Work.count().exec((err, count) => {
                 res.status(200)
                     .json({
                         items: works,
