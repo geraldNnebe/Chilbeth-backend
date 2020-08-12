@@ -117,7 +117,7 @@ const workFetchSome = (req, res) => {
                 return res.status(404)
                     .json(err);
             }
-            Work.count().exec((err, count) => {
+            Work.count({ isFeatured: true }).exec((err, count) => {
                 res.status(200)
                     .json({
                         items: works,
@@ -134,6 +134,7 @@ const workFetchSome = (req, res) => {
 }
 
 const workFetchSomeByCategory = (req, res) => {
+    console.log('fll', req.params.categoryid)
     var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts a string to number
     Work.find({ categoryId: req.params.categoryid })
         .skip(perPage * (currentPageNumber - 1))
@@ -147,7 +148,7 @@ const workFetchSomeByCategory = (req, res) => {
                 return res.status(404)
                     .json(err);
             }
-            Work.count().exec((err, count) => {
+            Work.count({ categoryId: req.params.categoryid }).exec((err, count) => {
                 res.status(200)
                     .json({
                         items: works,
