@@ -57,12 +57,12 @@ const saveSettings = function (req, res) {
                         settings.occupation = req.body.occupation;
                     if (req.body.desc !== '')
                         settings.desc = req.body.desc;
-                    if (req.body.landing_message_heading !== '')
-                        settings.landing_message_heading = req.body.landing_message_heading;
-                    if (req.body.landing_message !== '')
-                        settings.landing_message = req.body.landing_message;
-                    if (req.body.about_heading !== '')
-                        settings.about_heading = req.body.about_heading;
+                    if (req.body.landingMessageHeading !== '')
+                        settings.landingMessageHeading = req.body.landingMessageHeading;
+                    if (req.body.landingMessage !== '')
+                        settings.landingMessage = req.body.landingMessage;
+                    if (req.body.aboutHeading !== '')
+                        settings.aboutHeading = req.body.aboutHeading;
                     if (req.body.about !== '')
                         settings.about = req.body.about;
                     if (req.body.phone !== '')
@@ -83,8 +83,8 @@ const saveSettings = function (req, res) {
                         settings.district = req.body.district;
                     if (req.body.country !== '')
                         settings.country = req.body.country;
-                    if (req.body.opening_times !== '')
-                        settings.opening_times = req.body.opening_times;
+                    if (req.body.openingTimes !== '')
+                        settings.openingTimes = req.body.openingTimes;
                     // Add other records here
                     settings.save((err, updatedSettings) => {
                         if (err) res.status(500).json(err);
