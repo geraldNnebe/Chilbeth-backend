@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const canUpload = require('./check-user').checkUser;
 const Picture = mongoose.model("Picture");
+const CurriculumVitai = mongoose.model("CurriculumVitai");
 const formidable = require('formidable');
 const fs = require('fs');
 const doAsync = require('doasync'); // To read bigImagePath asynchronously
@@ -162,7 +163,9 @@ const upload = (req, res) => {
 }
 
 // Performs an upload, and at the same time deletes an existing image using its sorting hash
-// Uploading of landing page hero image, site logo, profile picture, DON'T use this method. They call deleteFromDatabase() directly.
+// NOTICE: For uploading of landing page hero image, site logo, profile picture, cv, DO NOT
+// use this method, because deleting of the old uploaded files for those are handled in
+// siteSettings.js, where deleteFromDatabase() is called.
 const uploadAndDelete = (req, res) => {
     let savingTechnique = (file, sortingHashes, author) => {
         // From the front-end, the sortingHash of the Image to upload
@@ -296,15 +299,17 @@ const uploadSiteLogo = (req, res) => {
 }
 
 // Upload profile picture
-const uploadProfilePicture = (req, res) => {
+const uploadProfile = (req, res) => {
+    if (req.params.type == "curriculumVitae")
+        return uploadCV(req, res); // Get out of uploadProfile() function
     let savingTechnique = (file, sortingHash, author) => {
         let smallSize = { w: null, h: null }, bigSize = { w: null, h: null }; // The sizes here, should be of portrait orientation
-        if (req.params.type == 'profilePicture') {
+        if (req.params.type == "profilePicture") {
             smallSize.w = 300;
             smallSize.h = 450;
             bigSize.w = 400;
             bigSize.h = 600;
-        } else if (req.params.type == 'profileThumbnail') {
+        } else if (req.params.type == "profileThumbnail") {
             smallSize.w = 60;
             smallSize.h = 60;
             bigSize.w = 100;
@@ -330,6 +335,39 @@ const uploadProfilePicture = (req, res) => {
             });
         });
     };
+    // Perform upload
+    performUpload(req, res, savingTechnique);
+}
+
+const uploadCV = (req, res) => {
+    let savingTechnique = (file, sortingHash, author) => {
+        let copiedFile = __dirname + '/../public/images/uploads/big/' + sortingHash + ".pdf";
+
+        fs.copyFile(file.path, copiedFile, (err) => {
+            doAsync(fs).readFile(copiedFile)
+                .then((readFile) => {
+                    CurriculumVitai.create({
+                        sortingHash: sortingHash,
+                        cvFile: Buffer.from(readFile).toString('base64'),
+                        contentType: "application/pdf"
+                    }, (err, mongoObject) => {
+                        fs.unlinkSync(file.path); // Delete the initial original upload
+                        fs.unlinkSync(copiedFile);
+
+                        if (err)
+                            return res.status(400)
+                                .json(err);
+
+                        // We are done if no errors
+                        res.status(201)
+                            .json({
+                                message: "File uploaded successfully",
+                                image: mongoObject
+                            });
+                    });
+                });
+        });
+    }
     // Perform upload
     performUpload(req, res, savingTechnique);
 }
@@ -360,5 +398,5 @@ module.exports = {
     uploadArtwork,
     uploadAndDelete,
     deleteFromDatabase,
-    uploadProfilePicture
+    uploadProfile
 };

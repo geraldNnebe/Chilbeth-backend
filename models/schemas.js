@@ -140,7 +140,29 @@ const pictureSchema = new mongoose.Schema({
     },
     contentType: {
         type: String,
+        required: true,
         default: 'image/jpeg'
+    }
+});
+
+const curriculumVitaeSchema = new mongoose.Schema({
+    authorEmail: {
+        type: String,
+        required: true,
+        default: process.env.DEFAULT_AUTHOR
+    },
+    sortingHash: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    cvFile: {
+        type: String
+    },
+    contentType: {
+        type: String,
+        required: true,
+        default: 'application/pdf'
     }
 });
 
@@ -156,6 +178,7 @@ const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever re
     landingImageThree: String,
     profilePicture: String,
     profileThumbnail: String,
+    curriculumVitae: String,
 
     name: {
         type: String,
@@ -241,5 +264,6 @@ mongoose.model("Blog", blogSchema);
 mongoose.model("WorkCategory", workCategorySchema);
 mongoose.model("Work", workSchema);
 mongoose.model("Picture", pictureSchema);
+mongoose.model("CurriculumVitai", curriculumVitaeSchema);
 mongoose.model("Setting", siteSettingSchema);
 mongoose.model("Newsletter", newsletterSchema);

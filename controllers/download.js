@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const Picture = mongoose.model('Picture');
+const CurriculumVitai = mongoose.model('CurriculumVitai');
 const stream = require('stream');
 
 const downloadSmallImage = (req, res) => {
@@ -38,6 +39,22 @@ const downloadBigImage = (req, res) => {
                 });
 }
 
+const downloadCV = (req, res) => {
+        let sortingHash = path.parse(req.params.sortinghash).name;
+        if (sortingHash == 'undefined') // At times, a variable may produce the string 'undefined'
+                return getBlankImage(req, res);
+        CurriculumVitai.findOne({ sortingHash: sortingHash })
+                .exec((err, cv) => {
+                        if (err) return next(err);
+                        try {
+                                res.contentType(cv.contentType);
+                                res.status(200).send(Buffer.from(cv.cvFile, 'base64'));
+                        } catch ($e) {
+                                res.status(404);
+                        }
+                });
+}
+
 const getBlankImage = (req, res) => { // TODO the blank image is not caching properly
         const resource = fs.createReadStream(__dirname + '/../public/images/blank.jpg');
         const ps = new stream.PassThrough();
@@ -55,5 +72,6 @@ const getBlankImage = (req, res) => { // TODO the blank image is not caching pro
 module.exports = {
         downloadSmallImage,
         downloadBigImage,
-        getBlankImage
+        getBlankImage,
+        downloadCV
 }

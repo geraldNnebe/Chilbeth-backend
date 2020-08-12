@@ -81,7 +81,7 @@ const workCategoryDelete = (req, res) => {
                     }
                     res.status(204)
                         .json(null);
-                })
+                });
 
         });
     });
@@ -189,6 +189,7 @@ const workCreate = function (req, res) {
                 author: author.email,
                 title: req.body.title,
                 categoryId: req.body.category,
+                isFeatured: req.body.featured,
                 imageSortHash: req.body.sortingHash,
                 desc: req.body.desc,
             }, (err, work) => {
@@ -196,6 +197,7 @@ const workCreate = function (req, res) {
                     res.status(400)
                         .json(err);
                 } else {
+                    categoryIncrementWorksCount(categoryid);
                     res.status(201)
                         .json(work);
                 }
@@ -206,7 +208,10 @@ const workCreate = function (req, res) {
 
 const workUpdateOne = (req, res) => {
     canAccess(req, res, (req, res, author) => { // If JWT was decrypted, and is valid
-        if (fetchCategory(req.body.categoryId)) // Does the category exist?
+        fetchCategory(req.body.category, (error, category) => {
+            if (error)
+                return res.status(400)
+                    .json({ message: "Category does not exist, so work cannot be edited" });
             Work.findById(req.params.workid)
                 .exec((err, work) => {
                     if (!work) {
@@ -217,7 +222,8 @@ const workUpdateOne = (req, res) => {
                             .json(err);
                     }
                     work.title = req.body.title;
-                    work.categoryId = req.body.categoryId;
+                    work.categoryId = req.body.category;
+                    work.isFeatured = req.body.featured;
                     work.desc = req.body.desc;
                     work.save((err, work) => {
                         if (err) {
@@ -229,9 +235,7 @@ const workUpdateOne = (req, res) => {
                         }
                     });
                 });
-        else
-            return res.status(400)
-                .json({ message: "Category does not exist, so work cannot be created" });
+        });
     });
 }
 
@@ -277,10 +281,27 @@ const fetchCategory = (categoryId, callback) => {
     WorkCategory.findById(categoryId)
         .exec((err, category) => {
             if (!category) {
-                callback(error, null);
+                // The return keyword here, will make any return statement in the callback work
+                // Two bullets need to be shot in order for the return statements in a callback
+                // to hit. These are the second bullets
+                return callback(error, null);
             } else if (err) {
-                callback(error, null);
+                // The return keyword here, will make any return statement in the callback work
+                return callback(error, null);
             }
-            callback(null, category);
+            // The return keyword here, will make any return statement in the callback work
+            return callback(null, category);
+        });
+}
+
+categoryIncrementWorksCount = (categoryId) => {
+    WorkCategory.findById(categoryId)
+        .exec((err, category) => {
+            if (!category)
+                return;
+            else if (err)
+                return;
+            category.numberOfWorks += 1;
+            category.save((err, category) => { });
         });
 }

@@ -13,7 +13,7 @@ const ctrlWorks = require('../controllers/work');
 const ctrlAuth = require('../controllers/auth');
 const ctrlPwd = require('../controllers/change-password');
 const ctrlUpload = require('../controllers/upload');
-const ctrlDownload = require('../controllers/downloadImage');
+const ctrlDownload = require('../controllers/download');
 const ctrlNewsletter = require('../controllers/newsletter');
 const adminSettings = require('../controllers/site-settings');
 
@@ -87,11 +87,13 @@ router.route('/upload_site_logo')
     .post(expressJwt, ctrlUpload.uploadSiteLogo);
 router.route('/upload_artwork')
     .post(expressJwt, ctrlUpload.uploadArtwork);
-router.route('/upload_profile_picture/:type')
-    .post(expressJwt, ctrlUpload.uploadProfilePicture);
+router.route('/upload_profile/:type')
+    .post(expressJwt, ctrlUpload.uploadProfile);
 /* Image download */
 router.get('/images/small/:imageid', ctrlDownload.downloadSmallImage);
 router.get('/images/big/:imageid', ctrlDownload.downloadBigImage);
 router.get('/images/big/blank/:imageid', ctrlDownload.getBlankImage); // Serve the blank image if it's requested. :imageid in this case will be the string 'blank'
+/* Download CV */
+router.get('/cv/:sortinghash/cv.pdf', ctrlDownload.downloadCV);
 
 module.exports = router;

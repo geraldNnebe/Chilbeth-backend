@@ -24,6 +24,7 @@ const saveSettings = function (req, res) {
                 if (!settings) { // If no settings record has been created. Note that there is only ever one setting record, and it has a field 'static' whose value is 1
                     Settings.create({ // Create a record
                         static: 1,
+                        siteLogo: req.body.siteLogo,
                         landingImageOne: req.body.landingImageOne,
                         landingImageTwo: req.body.landingImageTwo,
                         landingImageThree: req.body.landingImageThree
@@ -47,6 +48,8 @@ const saveSettings = function (req, res) {
                         settings.profilePicture = req.body.profilePicture;
                     if (req.body.profileThumbnail !== '')
                         settings.profileThumbnail = req.body.profileThumbnail;
+                    if (req.body.curriculumVitae !== '')
+                        settings.curriculumVitae = req.body.curriculumVitae;
 
                     if (req.body.name !== '')
                         settings.name = req.body.name;
