@@ -56,17 +56,10 @@ const downloadCV = (req, res) => {
 }
 
 const getBlankImage = (req, res) => { // TODO the blank image is not caching properly
-        const resource = fs.createReadStream(__dirname + '/../public/images/blank.jpg');
-        const ps = new stream.PassThrough();
-        stream.pipeline(resource, ps, (err) => {
-                if (err) {
-                        console.log(err);
-                        return res.status(404);
-                }
-        });
+        const resource = __dirname + '/../public/images/blank.jpg';
         res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
         res.contentType('image/jpeg');
-        ps.pipe(res);
+        res.status(200).send(Buffer.from(fs.readFileSync(resource), 'base64'));
 }
 
 module.exports = {

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 const register = (req, res) => {
-    return res.status(500); // TODO outcomment this to accept new user registrations
+    return res.status(500).json({message: "Registration not allowed!"}); // TODO outcomment this to enable registrations
     if (!req.body.name || !req.body.email || !req.body.password) {
         return res
             .status(400)
