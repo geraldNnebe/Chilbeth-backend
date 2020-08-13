@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const { deleteCvFromDatabase } = require('./upload');
 const canAccess = require('./check-user').checkUser; // Used for checking user priviledges
 const Settings = mongoose.model('Setting');
 const deleteImageFromDB = require('./upload').deleteFromDatabase;
+const deleteCvFromDB = require('./upload').deleteCvFromDatabase;
 
 const readSettings = (req, res) => {
     Settings.findOne({ static: 1 }, (err, settings) => {
@@ -89,8 +91,10 @@ const saveSettings = function (req, res) {
                     settings.save((err, updatedSettings) => {
                         if (err) res.status(500).json(err);
                         else {
-                            // Delete old image that is stored in mongodb
+                            // Delete old files which have sortingHashes and is stored in the database
                             deleteImageFromDB(req.body.previousImageForDeletion);
+                            if (req.body.curriculumVitae !== '')
+                                deleteCvFromDatabase(req.body.previousImageForDeletion)
                             res.status(200).json(updatedSettings);
                         }
                     });

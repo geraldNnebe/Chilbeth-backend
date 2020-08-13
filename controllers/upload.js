@@ -122,9 +122,17 @@ const performUpload = (req, res, savingTechnique) => {
     });
 }
 
-const deleteFromDatabase = (sortingHash) => { // Do not call this function within an unauthenticated operation
+const deletePictureFromDatabase = (sortingHash) => { // Do not call this function within an unauthenticated operation
     Picture.findOneAndRemove({ sortingHash: sortingHash })
         .exec((err, picture) => {
+            if (err)
+                return err;
+        });
+}
+
+const deleteCvFromDatabase = (sortingHash) => { // Do not call this function within an unauthenticated operation
+    CurriculumVitai.findOneAndRemove({ sortingHash: sortingHash })
+        .exec((err, cv) => {
             if (err)
                 return err;
         });
@@ -185,7 +193,7 @@ const uploadAndDelete = (req, res) => {
                         .json(err);
 
                 // We are done if no errors
-                deleteFromDatabase(sortingHashes[1]); // Delete what we should delete
+                deletePictureFromDatabase(sortingHashes[1]); // Delete what we should delete
                 res.status(201)
                     .json({
                         message: "Image uploaded successfully",
@@ -397,6 +405,7 @@ module.exports = {
     uploadSiteLogo,
     uploadArtwork,
     uploadAndDelete,
-    deleteFromDatabase,
-    uploadProfile
+    uploadProfile,
+    deleteFromDatabase: deletePictureFromDatabase,
+    deleteCvFromDatabase
 };

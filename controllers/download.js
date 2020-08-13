@@ -56,9 +56,9 @@ const downloadCV = (req, res) => {
 }
 
 const getBlankImage = (req, res) => { // TODO the blank image is not caching properly
-        const resource = __dirname + '/../public/images/blank.jpg';
+        const resource = __dirname + '/../public/images/blank.png';
         res.set('Cache-Control', 'public, max-age=31557600, s-maxage=31557600'); // One year cache
-        res.contentType('image/jpeg');
+        res.contentType('image/png');
         res.status(200).send(Buffer.from(fs.readFileSync(resource), 'base64'));
 }
 
