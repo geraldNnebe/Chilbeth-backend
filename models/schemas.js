@@ -6,7 +6,10 @@ const blogCommentSchema = new mongoose.Schema({
         required: true
     },
     email: String,
-    comment: String,
+    comment: {
+        type: String,
+        maxlength: 1000
+    },
     createdOn: {
         type: Date,
         default: Date.now

@@ -38,7 +38,8 @@ router.route('/blog/:blogid')
 // Blog comments
 router.route('/blog/:blogid/comment')
     .post(ctrlBlogs.addComment);
-router.delete('/blog/:blogid/comment/:commentid', ctrlBlogs.deleteComment);
+router.route('/blog/:blogid/comment/:commentid')
+    .delete(expressJwt, ctrlBlogs.deleteComment);
 router.route('/blog/:blogid/comment/:page') // :page for page number when paging
     .get(ctrlBlogs.fetchComments);
 

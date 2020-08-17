@@ -134,7 +134,6 @@ const workFetchSome = (req, res) => {
 }
 
 const workFetchSomeByCategory = (req, res) => {
-    console.log('fll', req.params.categoryid)
     var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts a string to number
     Work.find({ categoryId: req.params.categoryid })
         .skip(perPage * (currentPageNumber - 1))

@@ -244,12 +244,12 @@ const deleteComment = (req, res) => {
     canAccess(req, res, (req, res, author) => {
         const { blogid, commentid } = req.params;
         if (blogid) {
-            Blog.findOne(blogid)
+            Blog.findById(blogid)
                 .exec((err, blog) => {
                     if (!blog) {
                         return res
                             .status(404)
-                            .json({ 'message': 'Blog not found' });
+                            .json({ message: 'Blog not found' });
                     } else if (err) {
                         return res.status(404)
                             .json(err);
@@ -258,7 +258,7 @@ const deleteComment = (req, res) => {
                         if (!blog.comments.id(commentid)) {
                             return res
                                 .status(404)
-                                .json({ 'message': 'Comment not found' });
+                                .json({ message: 'Comment not found' });
                         } else {
                             blog.comments.id(commentid).remove();
                             blog.commentCount = blog.commentCount - 1;
