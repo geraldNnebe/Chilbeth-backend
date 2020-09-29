@@ -32,6 +32,7 @@ const blogSchema = new mongoose.Schema({
         type: String,
         default: "default.jpg" // TODO
     },
+    videoUrl: { type: String, maxlength: 500 },
     createdOn: {
         type: Date,
         default: Date.now
@@ -115,6 +116,32 @@ const workSchema = new mongoose.Schema({
         required: true,
         default: "default.jpg" // TODO
     },
+    videoUrl: { type: String, maxlength: 500 },
+    desc: {
+        type: String
+    },
+    createdOn: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const exhibitionSchema = new mongoose.Schema({
+    authorEmail: {
+        type: String,
+        required: true,
+        default: process.env.DEFAULT_AUTHOR
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    imageSortHash: {
+        type: String,
+        required: true,
+        default: "default.jpg" // TODO
+    },
+    videoUrl: { type: String, maxlength: 500 },
     desc: {
         type: String
     },
@@ -169,7 +196,8 @@ const curriculumVitaeSchema = new mongoose.Schema({
     }
 });
 
-const siteSettingSchema = new mongoose.Schema({ // There is only one (1) ever record in this collection
+// There is only one (1) ever record in this collection
+const siteSettingSchema = new mongoose.Schema({
     static: {
         type: Number,
         unique: true,
@@ -266,6 +294,7 @@ const newsletterSchema = new mongoose.Schema({
 mongoose.model("Blog", blogSchema);
 mongoose.model("WorkCategory", workCategorySchema);
 mongoose.model("Work", workSchema);
+mongoose.model("Exhibition", exhibitionSchema);
 mongoose.model("Picture", pictureSchema);
 mongoose.model("CurriculumVitai", curriculumVitaeSchema);
 mongoose.model("Setting", siteSettingSchema);

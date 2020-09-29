@@ -191,7 +191,7 @@ const workCreate = function (req, res) {
                 categoryId: req.body.category,
                 isFeatured: req.body.featured,
                 imageSortHash: req.body.sortingHash,
-                desc: req.body.desc,
+                desc: req.body.desc
             }, (err, work) => {
                 if (err) {
                     res.status(400)

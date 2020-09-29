@@ -103,6 +103,7 @@ const blogCreate = function (req, res) {
             title: req.body.title,
             post: req.body.post,
             desc: req.body.desc,
+            videoUrl: req.body.videoUrl,
             imageSortHash: req.body.sortingHash,
         }, (err, blog) => {
             if (err) {
@@ -133,6 +134,7 @@ const blogUpdateOne = (req, res) => { // If JWT was decrypted, and is valid
                 }
                 blog.title = req.body.title;
                 blog.desc = req.body.desc;
+                blog.videoUrl = req.body.videoUrl;
                 blog.post = req.body.post;
                 blog.imageSortHash = req.body.sortingHash,
                     blog.save((err, blog) => {

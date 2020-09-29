@@ -8,8 +8,9 @@ const expressjwt = require('express-jwt');
 // which you’ll use to send the secret and also to specify the name of the property you
 // want to add to the req object to hold the payload
 
-const ctrlBlogs = require('../controllers/blog');
-const ctrlWorks = require('../controllers/work');
+const ctrlBlog = require('../controllers/blog');
+const ctrlWork = require('../controllers/work');
+const ctrlExhibition = require('../controllers/exhibition');
 const ctrlAuth = require('../controllers/auth');
 const ctrlPwd = require('../controllers/change-password');
 const ctrlUpload = require('../controllers/upload');
@@ -25,41 +26,51 @@ const expressJwt = expressjwt({ // The "options object" we talked about earlier
 
 /* Blog routes */
 router.route('/blog')
-    .get(ctrlBlogs.blogFetchAll) // TODO Caution: payload size may be too much
-    .post(expressJwt, ctrlBlogs.blogCreate); // Note the expressJwt router middleware
+    .get(ctrlBlog.blogFetchAll) // TODO Caution: payload size may be too much
+    .post(expressJwt, ctrlBlog.blogCreate); // Note the expressJwt router middleware
 router.route('/blog/p/:page')
-    .get(ctrlBlogs.blogFetchSome);
-router.get('/blog/search', ctrlBlogs.blogSearch);
-router.get('/blog/recent', ctrlBlogs.blogFetchRecent);
+    .get(ctrlBlog.blogFetchSome);
+router.get('/blog/search', ctrlBlog.blogSearch);
+router.get('/blog/recent', ctrlBlog.blogFetchRecent);
 router.route('/blog/:blogid')
-    .get(ctrlBlogs.blogReadOne)
-    .put(expressJwt, ctrlBlogs.blogUpdateOne)
-    .delete(expressJwt, ctrlBlogs.blogDeleteOne);
+    .get(ctrlBlog.blogReadOne)
+    .put(expressJwt, ctrlBlog.blogUpdateOne)
+    .delete(expressJwt, ctrlBlog.blogDeleteOne);
 // Blog comments
 router.route('/blog/:blogid/comment')
-    .post(ctrlBlogs.addComment);
+    .post(ctrlBlog.addComment);
 router.route('/blog/:blogid/comment/:commentid')
-    .delete(expressJwt, ctrlBlogs.deleteComment);
+    .delete(expressJwt, ctrlBlog.deleteComment);
 router.route('/blog/:blogid/comment/:page') // :page for page number when paging
-    .get(ctrlBlogs.fetchComments);
+    .get(ctrlBlog.fetchComments);
 
 /* Work routes */
 router.route('/work_categories')
-    .get(ctrlWorks.workCategoryFetchAll)
-    .post(expressJwt, ctrlWorks.workCategoryCreate);
+    .get(ctrlWork.workCategoryFetchAll)
+    .post(expressJwt, ctrlWork.workCategoryCreate);
 router.route('/work_categories/:categoryid')
-    .put(expressJwt, ctrlWorks.workCategoryUpdate)
-    .delete(expressJwt, ctrlWorks.workCategoryDelete);
+    .put(expressJwt, ctrlWork.workCategoryUpdate)
+    .delete(expressJwt, ctrlWork.workCategoryDelete);
 router.route('/work/:categoryid')
-    .post(expressJwt, ctrlWorks.workCreate); // Note the expressJwt router middleware
+    .post(expressJwt, ctrlWork.workCreate); // Note the expressJwt router middleware
 router.route('/work/p/:page') // Fetch work in the "featured list"
-    .get(ctrlWorks.workFetchSome);
+    .get(ctrlWork.workFetchSome);
 router.route('/work/:categoryid/p/:page') // Fetch work in a category
-    .get(ctrlWorks.workFetchSomeByCategory);
+    .get(ctrlWork.workFetchSomeByCategory);
 router.route('/work/:workid')
-    .get(ctrlWorks.workReadOne)
-    .put(expressJwt, ctrlWorks.workUpdateOne)
-    .delete(expressJwt, ctrlWorks.workDeleteOne);
+    .get(ctrlWork.workReadOne)
+    .put(expressJwt, ctrlWork.workUpdateOne)
+    .delete(expressJwt, ctrlWork.workDeleteOne);
+
+/* Exhibition routes */
+router.route('/exhibition')
+    .post(expressJwt, ctrlExhibition.exhibitionCreate);
+router.route('/exhibition/p/:page')
+    .get(ctrlExhibition.exhibitionFetchSome);
+router.route('/exhibition/:exhibitionid')
+    .get(ctrlExhibition.exhibitionReadOne)
+    .put(expressJwt, ctrlExhibition.exhibitionUpdateOne)
+    .delete(expressJwt, ctrlExhibition.exhibitionDeleteOne);
 
 /* Newsletter routes */
 router.route('/newsletter')
