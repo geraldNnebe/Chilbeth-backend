@@ -104,7 +104,8 @@ const workFetchAll = (req, res) => {
 }
 
 const workFetchSome = (req, res) => {
-    var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1; // The + casts a string to number
+    // The + casts a string to number
+    var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1;
     Work.find({ isFeatured: true })
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
@@ -224,6 +225,7 @@ const workUpdateOne = (req, res) => {
                     work.title = req.body.title;
                     work.categoryId = req.body.category;
                     work.isFeatured = req.body.featured;
+                    work.imageSortHash = req.body.sortingHash;
                     work.desc = req.body.desc;
                     work.save((err, work) => {
                         if (err) {

@@ -5,7 +5,7 @@ const deleteImageFromDB = require('./upload').deleteFromDatabase;
 
 const exhibitionFetchSome = (req, res) => {
     var perPage = 6, currentPageNumber = +req.params.page > 0 ? +req.params.page : 1;
-    Exhibition.find({ isFeatured: true })
+    Exhibition.find()
         .skip(perPage * (currentPageNumber - 1))
         .limit(perPage)
         .sort({ createdOn: 'desc' })
@@ -17,7 +17,7 @@ const exhibitionFetchSome = (req, res) => {
                 return res.status(404)
                     .json(err);
             }
-            Exhibition.count({ isFeatured: true }).exec((err, count) => {
+            Exhibition.count().exec((err, count) => {
                 res.status(200)
                     .json({
                         items: exhibitions,
@@ -81,8 +81,9 @@ const exhibitionUpdateOne = (req, res) => {
                 }
                 exhibition.title = req.body.title;
                 exhibition.isFeatured = req.body.featured;
+                exhibition.imageSortHash = req.body.sortingHash;
                 exhibition.desc = req.body.desc;
-                work.videoUrl = req.body.videoUrl;
+                exhibition.videoUrl = req.body.videoUrl;
                 exhibition.save((err, exhibition) => {
                     if (err) {
                         res.status(404)
